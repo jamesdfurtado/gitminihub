@@ -1,2 +1,2 @@
-# gitmini-server
-A Python server for hosting GitMini repositories remotely.
+# gitminihub
+A full stack Python web platform for hosting GitMini repositories. *GitHub for GitMini!*
