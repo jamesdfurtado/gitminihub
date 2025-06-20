@@ -1,0 +1,10 @@
+{
+  "user1": {
+    "password_hash": "$2b$12$6P5LN9yPLrWCzVHLuMc/IegkWjSzFrn0idOElYdjvSHfGQbvVE1RK",
+    "repos": ["weather-app", "repository3", "example-repo"]
+  },
+  "user2": {
+    "password_hash": "$342342432523yPLrWCzVHLuMc/IegkWjSzFrn0idOElYdjvSHfGQbvVE1RK",
+    "repos": ["my-app"]
+  }
+}
