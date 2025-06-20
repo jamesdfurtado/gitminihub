@@ -3,3 +3,6 @@
 
 # Python crap
 __pycache__/
+
+# JSON "Databases"
+*.json
