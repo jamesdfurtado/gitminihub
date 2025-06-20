@@ -18,6 +18,6 @@ async def search(request: Request, user: str = "", repo: str = ""):
         })
 
     if repo:
-        return RedirectResponse(url=f"/r/{user}/{repo}")
+        return RedirectResponse(url=f"/{user}/{repo}")
     else:
-        return RedirectResponse(url=f"/u/{user}")
+        return RedirectResponse(url=f"/{user}")

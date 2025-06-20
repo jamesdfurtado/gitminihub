@@ -40,7 +40,7 @@ async def signup(
 # LOGIN PAGE ROUTES
 @router.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
-    return templates.TemplateResponse("signin.html", {"request": request})
+    return templates.TemplateResponse("login.html", {"request": request})
 
 @router.post("/login")
 async def login(
@@ -52,7 +52,7 @@ async def login(
     user = users.get(username)
 
     if not user or not bcrypt.verify(password, user["password_hash"]):
-        return templates.TemplateResponse("signin.html", {
+        return templates.TemplateResponse("login.html", {
             "request": request,
             "error": "Invalid username or password."
         })

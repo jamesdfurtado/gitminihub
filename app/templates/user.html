@@ -1,22 +1,14 @@
 <!DOCTYPE html>
-
 <html>
-
-    <head>
-
-        <title>{{ username }} - GitMiniHub</title>
-
-    </head>
-
-    <body>
-
-        <h1>{{ username }}'s Repositories</h1>
-        <ul>
-            {% for repo in repos %}
-                <li><a href="/{{ username }}/{{ repo }}">{{ repo }}</a></li>
-            {% endfor %}
-        </ul>
-        
-    </body>
-
+<head>
+    <title>{{ username }} - GitMiniHub</title>
+</head>
+<body>
+    <h1>{{ username }}'s Repositories</h1>
+    <ul>
+        {% for repo in repos %}
+            <li><a href="/{{ username }}/{{ repo }}">{{ repo }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
 </html>
