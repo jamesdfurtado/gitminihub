@@ -1,26 +1,28 @@
 <!DOCTYPE html>
-
 <html>
+<head>
+    <title>GitMiniHub</title>
+</head>
+<body>
+    <h1>Welcome to GitMiniHub</h1>
+    <p>This is the homepage</p>
 
-    <head>
+    <form action="/search" method="get">
+        <label>User:</label>
+        <input type="text" name="user"><br><br>
+        <label>Repository:</label>
+        <input type="text" name="repo"><br><br>
+        <button type="submit">Search</button>
+    </form>
 
-        <title>GitMiniHub</title>
-        
-    </head>
-
-    <body>
-
-        <h1>Welcome to GitMiniHub</h1>
-        <p>This is the homepage</p>
-
-        <form action="/search" method="get">
-            <label>User:</label>
-            <input type="text" name="user"><br><br>
-            <label>Repository:</label>
-            <input type="text" name="repo"><br><br>
-            <button type="submit">Search</button>
+    <br>
+    <div>
+        <form action="/signup" method="get" style="display:inline;">
+            <button type="submit">Sign Up</button>
         </form>
-
-    </body>
-
+        <form action="/login" method="get" style="display:inline;">
+            <button type="submit">Sign In</button>
+        </form>
+    </div>
+</body>
 </html>
