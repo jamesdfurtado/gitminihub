@@ -1,25 +1,7 @@
-import os
 import json
-import unittest
-from fastapi.testclient import TestClient
-from app.main import app
-from app.pages import utils
+from tests.test_helpers import UserJsonTestCase
 
-class SignupTests(unittest.TestCase):
-    def setUp(self):
-        self.client = TestClient(app)
-        self.users_path = utils.users_path
-        self._backup = {}
-        if os.path.exists(self.users_path):
-            with open(self.users_path, "r") as f:
-                self._backup = json.load(f)
-        with open(self.users_path, "w") as f:
-            json.dump({}, f)
-
-    def tearDown(self):
-        with open(self.users_path, "w") as f:
-            json.dump(self._backup, f)
-
+class SignupTests(UserJsonTestCase):
     def test_signup_invalid_username_space(self):
         resp = self.client.post("/signup", data={"username": "user name", "password": "pass"})
         self.assertIn("Username must be lowercase and contain no spaces.", resp.text)

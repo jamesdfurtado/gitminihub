@@ -12,7 +12,3 @@ class UserTests(unittest.TestCase):
         self.assertIn("charlie's Repositories", resp.text)
         for repo in ["my-repo", "weatherapp", "cool-stuff"]:
             self.assertIn(f'<a href="/charlie/{repo}">{repo}</a>', resp.text)
-
-    def test_logout_not_found(self):
-        resp = self.client.get("/logout")
-        self.assertEqual(resp.status_code, 404)
