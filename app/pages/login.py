@@ -17,6 +17,14 @@ async def login(
     username: str = Form(...),
     password: str = Form(...)
 ):
+    username = username.strip().lower()
+
+    if not username or " " in username:
+        return templates.TemplateResponse("login.html", {
+            "request": request,
+            "error": "Invalid username or password."
+        })
+
     users = load_users()
     user = users.get(username)
 

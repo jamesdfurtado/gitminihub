@@ -17,6 +17,14 @@ async def signup(
     username: str = Form(...),
     password: str = Form(...)
 ):
+    username = username.strip().lower()
+
+    if not username or " " in username:
+        return templates.TemplateResponse("signup.html", {
+            "request": request,
+            "error": "Username must be lowercase and contain no spaces."
+        })
+
     users = load_users()
 
     if username in users:
