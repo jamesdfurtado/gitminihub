@@ -13,8 +13,7 @@ async def user_profile(request: Request, username: str):
         raise HTTPException(status_code=404)
 
     repos = ["my-repo", "weatherapp", "cool-stuff"]
-    return templates.TemplateResponse("user.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "user.html", {
         "username": username,
         "repos": repos
     })

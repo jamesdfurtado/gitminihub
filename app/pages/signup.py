@@ -9,7 +9,7 @@ templates = Jinja2Templates(directory="app/templates")
 
 @router.get("/signup", response_class=HTMLResponse)
 async def signup_page(request: Request):
-    return templates.TemplateResponse("signup.html", {"request": request})
+    return templates.TemplateResponse(request, "signup.html")
 
 @router.post("/signup")
 async def signup(
@@ -20,16 +20,14 @@ async def signup(
     username = username.strip().lower()
 
     if not username or " " in username:
-        return templates.TemplateResponse("signup.html", {
-            "request": request,
+        return templates.TemplateResponse(request, "signup.html", {
             "error": "Username must be lowercase and contain no spaces."
         })
 
     users = load_users()
 
     if username in users:
-        return templates.TemplateResponse("signup.html", {
-            "request": request,
+        return templates.TemplateResponse(request, "signup.html", {
             "error": "Username already exists."
         })
 

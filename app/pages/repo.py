@@ -7,8 +7,8 @@ templates = Jinja2Templates(directory="app/templates")
 
 @router.get("/{username}/{repo_name}", response_class=HTMLResponse)
 async def view_repo(request: Request, username: str, repo_name: str):
-    return templates.TemplateResponse("repo.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "repo.html", {
         "username": username,
         "repo_name": repo_name
     })
+

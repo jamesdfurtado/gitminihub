@@ -9,7 +9,7 @@ templates = Jinja2Templates(directory="app/templates")
 
 @router.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    return templates.TemplateResponse(request, "login.html")
 
 @router.post("/login")
 async def login(
@@ -20,17 +20,16 @@ async def login(
     username = username.strip().lower()
 
     if not username or " " in username:
-        return templates.TemplateResponse("login.html", {
-            "request": request,
+        return templates.TemplateResponse(request, "login.html", {
             "error": "Invalid username or password."
         })
+
 
     users = load_users()
     user = users.get(username)
 
     if not user or not bcrypt.verify(password, user["password_hash"]):
-        return templates.TemplateResponse("login.html", {
-            "request": request,
+        return templates.TemplateResponse(request, "login.html", {
             "error": "Invalid username or password."
         })
 
