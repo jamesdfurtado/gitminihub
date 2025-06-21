@@ -1,3 +1,5 @@
+# Just to clarify, these are helper functions for the test cases
+
 import os
 import json
 import unittest

@@ -1,12 +1,9 @@
-import unittest
-from fastapi.testclient import TestClient
-from app.main import app
+from tests.test_helpers import UserJsonTestCase
 
-class UserTests(unittest.TestCase):
-    def setUp(self):
-        self.client = TestClient(app)
+class UserTests(UserJsonTestCase):
 
     def test_user_profile(self):
+        """ Test that a user’s profile page shows their repos correctly. """
         resp = self.client.get("/charlie")
         self.assertEqual(resp.status_code, 200)
         self.assertIn("charlie's Repositories", resp.text)
