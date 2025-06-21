@@ -17,13 +17,14 @@ async def login(
     username: str = Form(...),
     password: str = Form(...)
 ):
-    username = username.strip().lower()
+    # Strip spaces and decapitalize usernames
+    username = username.replace(" ", "").lower()
 
-    if not username or " " in username:
+    # reject passwords with spaces
+    if " " in password:
         return templates.TemplateResponse(request, "login.html", {
-            "error": "Invalid username or password."
+            "error": "Password cannot contain spaces."
         })
-
 
     users = load_users()
     user = users.get(username)

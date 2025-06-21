@@ -17,11 +17,19 @@ async def signup(
     username: str = Form(...),
     password: str = Form(...)
 ):
+    # Enforce case insensitivty
     username = username.strip().lower()
 
-    if not username or " " in username:
+    # Restrict spaces and username 'login'/'signup' (these are endpoints)
+    if not username or " " in username or username in ("login", "signup"):
         return templates.TemplateResponse(request, "signup.html", {
-            "error": "Username must be lowercase and contain no spaces."
+            "error": "Invalid username."
+        })
+
+    # Check for spaces in password
+    if " " in password:
+        return templates.TemplateResponse(request, "signup.html", {
+            "error": "Password cannot contain spaces."
         })
 
     users = load_users()
