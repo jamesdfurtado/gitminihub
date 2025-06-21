@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Log In – GitMiniHub</title>
+    <script src="/static/js/togglePassword.js" defer></script>
 </head>
 <body>
     <h1>Log in to GitMiniHub</h1>
@@ -15,7 +16,8 @@
         <input type="text" name="username" required><br><br>
 
         <label>Password:</label>
-        <input type="password" name="password" required><br><br>
+        <input type="password" id="password" name="password" required>
+        <button type="button" id="toggle-btn" onclick="togglePassword()">See Password</button><br><br>
 
         <button type="submit">Log In</button>
     </form>
