@@ -20,7 +20,7 @@ async def login(
     # Strip spaces and decapitalize usernames
     username = username.replace(" ", "").lower()
 
-    # reject passwords with spaces
+    # Restrict passwords with spaces
     if " " in password:
         return templates.TemplateResponse(request, "login.html", {
             "error": "Password cannot contain spaces."
