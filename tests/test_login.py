@@ -38,3 +38,24 @@ class LoginTests(UserJsonTestCase):
         resp = self.client.post("/login", data={"username": "ALICE", "password": "mypwd"}, follow_redirects=False)
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(resp.headers["location"], "/")
+
+    def test_login_password_with_space_rejected(self):
+        """ Test that passwords with spaces are rejected during login. """
+        valid_hash = bcrypt.hash("mypassword")
+        with open(self.users_path, "w") as f:
+            json.dump({"user": {"password_hash": valid_hash, "repos": []}}, f)
+
+        resp = self.client.post("/login", data={"username": "user", "password": "my password"})
+        self.assertIn("Password cannot contain spaces.", resp.text)
+
+
+    def test_login_username_with_spaces_normalized(self):
+        """ Test that usernames with spaces are normalized and allowed. """
+        valid_hash = bcrypt.hash("goodpwd")
+        with open(self.users_path, "w") as f:
+            json.dump({"demo": {"password_hash": valid_hash, "repos": []}}, f)
+
+        resp = self.client.post("/login", data={"username": "  d e m o  ", "password": "goodpwd"}, follow_redirects=False)
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp.headers["location"], "/")
+
