@@ -25,7 +25,7 @@ async def signup(
 ):
     if is_invalid_username(username):
         return templates.TemplateResponse(request, "signup.html", {
-            "error": "Invalid username."
+            "error": "Invalid username. Use only lowercase letters, numbers, or dashes."
         })
 
     if is_invalid_password(password):
@@ -33,9 +33,7 @@ async def signup(
             "error": "Password cannot contain spaces."
         })
 
-    # Only normalize after passing validation
     normalized = normalize_username(username)
-
     users = load_users()
 
     if normalized in users:
