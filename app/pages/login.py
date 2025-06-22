@@ -6,6 +6,7 @@ from app.pages.utils import (
     normalize_username,
     is_invalid_password,
     verify_password,
+    create_session_cookie,
 )
 
 router = APIRouter()
@@ -36,4 +37,7 @@ async def login(
             "error": "Invalid username or password."
         })
 
-    return RedirectResponse("/", status_code=302)
+    response = RedirectResponse("/", status_code=302)
+    session_cookie = create_session_cookie(username)
+    response.set_cookie(key="session", value=session_cookie, httponly=True, max_age=3600)
+    return response

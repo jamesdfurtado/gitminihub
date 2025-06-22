@@ -17,9 +17,12 @@
 
     <br>
 
-    <div>
+    {% if user %}
+        <p>Signed in as <strong>{{ user }}</strong></p>
+        <a href="/logout"><button>Log Out</button></a>
+    {% else %}
         <a href="/signup"><button>Sign Up</button></a>
         <a href="/login"><button>Log In</button></a>
-    </div>
+    {% endif %}
 </body>
 </html>

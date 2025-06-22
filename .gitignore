@@ -6,3 +6,6 @@ __pycache__/
 
 # JSON "Databases"
 *.json
+
+# environment variables
+.env
