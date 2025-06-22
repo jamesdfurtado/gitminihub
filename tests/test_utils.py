@@ -2,10 +2,10 @@
 
 import json
 import os
-from tests.test_helpers import UserJsonTestCase
+from tests.test_helpers import AppTestCase
 from app.pages import utils
 
-class UtilsTests(UserJsonTestCase):
+class UtilsTests(AppTestCase):
 
     def test_load_users_no_file(self):
         """ Test that loading users with empty users.json doesn't crash. """

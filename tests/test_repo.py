@@ -1,6 +1,6 @@
-from tests.test_helpers import UserJsonTestCase
+from tests.test_helpers import AppTestCase
 
-class RepoTests(UserJsonTestCase):
+class RepoTests(AppTestCase):
 
     def test_view_repo_page(self):
         """ Test that visiting a repo page loads correctly. """

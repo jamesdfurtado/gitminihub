@@ -1,6 +1,7 @@
-from tests.test_helpers import UserJsonTestCase
+from tests.test_helpers import AppTestCase
 
-class HomepageTests(UserJsonTestCase):
+class HomepageTests(AppTestCase):
+    
     def test_homepage(self):
         """ Test for successful homepage load """
         resp = self.client.get("/")

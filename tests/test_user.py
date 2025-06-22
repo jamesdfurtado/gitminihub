@@ -1,6 +1,6 @@
-from tests.test_helpers import UserJsonTestCase
+from tests.test_helpers import AppTestCase
 
-class UserTests(UserJsonTestCase):
+class UserTests(AppTestCase):
 
     def test_user_profile(self):
         """ Test that a user’s profile page shows their repos correctly. """

@@ -6,9 +6,13 @@ import unittest
 from fastapi.testclient import TestClient
 from app.main import app
 from app.pages import utils
+from itsdangerous import URLSafeSerializer
 
-class UserJsonTestCase(unittest.TestCase):
+class AppTestCase(unittest.TestCase):
+
     def setUp(self):
+        """ Setting up the test environment """
+
         self.client = TestClient(app)
         self.users_path = "tests/users.json"
         self._backup = None
@@ -23,7 +27,12 @@ class UserJsonTestCase(unittest.TestCase):
 
         utils.users_path = self.users_path
 
+        secret = os.environ["GITMINIHUB_SECRET"]
+        self.serializer = URLSafeSerializer(secret)
+
     def tearDown(self):
+        """ Tearing down test environment. """
+
         if self._backup is not None:
             with open(self.users_path, "w") as f:
                 json.dump(self._backup, f)

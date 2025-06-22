@@ -1,10 +1,11 @@
 import json
-from tests.test_helpers import UserJsonTestCase
+from tests.test_helpers import AppTestCase
+from app.pages.utils import RESERVED_USERNAMES
 
-class SignupTests(UserJsonTestCase):
+class SignupTests(AppTestCase):
 
     def test_signup_username_invalid_is_rejected(self):
-        """ Test that usernames with spaces or upper-case are rejected. """
+        """ Usernames with spaces and uppercase chars are rejected. """
         resp1 = self.client.post("/signup", data={"username": "UsE rName", "password": "pass"})
         self.assertIn("Invalid username.", resp1.text)
 
@@ -15,19 +16,19 @@ class SignupTests(UserJsonTestCase):
         self.assertIn("Invalid username.", resp3.text)
 
     def test_signup_username_with_symbols_rejected(self):
-        """ Test that usernames with disallowed symbols are rejected. """
+        """ Reject usernames with non-alphanumeric chars. """
         for bad in ["abc.def", "user@", "weird$name", "with/slash", "brackets()", "semi;colon"]:
             resp = self.client.post("/signup", data={"username": bad, "password": "pass"})
             self.assertIn("Invalid username.", resp.text)
 
     def test_signup_username_with_dash_and_numbers_accepted(self):
-        """ Test that usernames with dashes and digits are accepted. """
+        """ Alphanumeric and dashes are allowed for username signups. """
         resp = self.client.post("/signup", data={"username": "valid-user123", "password": "okpass"}, follow_redirects=False)
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(resp.headers["location"], "/login")
 
     def test_signup_duplicate_username(self):
-        """ Test that existing usernames can’t be reused. """
+        """ Cannot create user with duplicate name. """
         with open(self.users_path, "w") as f:
             json.dump({"existing": {"password_hash": "hash", "repos": []}}, f)
 
@@ -35,7 +36,7 @@ class SignupTests(UserJsonTestCase):
         self.assertIn("Username already exists.", resp.text)
 
     def test_signup_success_creates_user_and_redirects(self):
-        """ Test that valid signups create a user and redirect to login. """
+        """ Valid signups succeed and redirect to login page. """
         resp = self.client.post("/signup", data={"username": "testuser", "password": "Secret1"}, follow_redirects=False)
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(resp.headers["location"], "/login")
@@ -46,13 +47,15 @@ class SignupTests(UserJsonTestCase):
         self.assertIn("password_hash", saved["testuser"])
         self.assertIsInstance(saved["testuser"]["repos"], list)
 
+
     def test_signup_reserved_username_rejected(self):
-        """ Test that reserved usernames are blocked. """
-        for reserved in ["login", "signup", "static", "admin", "api"]:
+        """ User cannot signup with blocked usernames. """
+        for reserved in RESERVED_USERNAMES:
             resp = self.client.post("/signup", data={"username": reserved, "password": "somepass"})
             self.assertIn("Invalid username.", resp.text)
 
+
     def test_signup_password_with_space_rejected(self):
-        """ Test that signup rejects passwords with spaces. """
+        """ Passwords with spaces not allowed. """
         resp = self.client.post("/signup", data={"username": "newuser", "password": "bad pass"})
         self.assertIn("Password cannot contain spaces.", resp.text)
