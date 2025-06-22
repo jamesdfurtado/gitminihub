@@ -1,8 +1,14 @@
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from passlib.hash import bcrypt
-from app.pages.utils import load_users, save_users
+from app.pages.utils import (
+    load_users,
+    save_users,
+    normalize_username,
+    is_invalid_username,
+    is_invalid_password,
+    hash_password,
+)
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -17,30 +23,28 @@ async def signup(
     username: str = Form(...),
     password: str = Form(...)
 ):
-    # Enforce case insensitivty
-    username = username.strip().lower()
-
-    # Restrict spaces and username 'login'/'signup' (these are endpoints)
-    if not username or " " in username or username in ("login", "signup"):
+    if is_invalid_username(username):
         return templates.TemplateResponse(request, "signup.html", {
             "error": "Invalid username."
         })
 
-    # Check for spaces in password
-    if " " in password:
+    if is_invalid_password(password):
         return templates.TemplateResponse(request, "signup.html", {
             "error": "Password cannot contain spaces."
         })
 
+    # Only normalize after passing validation
+    normalized = normalize_username(username)
+
     users = load_users()
 
-    if username in users:
+    if normalized in users:
         return templates.TemplateResponse(request, "signup.html", {
             "error": "Username already exists."
         })
 
-    users[username] = {
-        "password_hash": bcrypt.hash(password),
+    users[normalized] = {
+        "password_hash": hash_password(password),
         "repos": []
     }
     save_users(users)
