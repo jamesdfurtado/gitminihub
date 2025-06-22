@@ -9,7 +9,6 @@ class SignupTests(UserJsonTestCase):
         self.assertIn("Invalid username.", resp.text)
 
 
-
     def test_signup_duplicate_username(self):
         """ Test that existing usernames can’t be reused. """
         with open(self.users_path, "w") as f:
@@ -21,7 +20,7 @@ class SignupTests(UserJsonTestCase):
 
     def test_signup_success_creates_user_and_redirects(self):
         """ Test that valid signups create a user and redirect to login. """
-        resp = self.client.post("/signup", data={"username": "TestUser", "password": "Secret1"}, follow_redirects=False)
+        resp = self.client.post("/signup", data={"username": "testuser", "password": "Secret1"}, follow_redirects=False)
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(resp.headers["location"], "/login")
 
