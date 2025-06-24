@@ -18,8 +18,25 @@
 </form>
 
 {% if repos %}
-    <h2 style="margin-top: 40px;">Recent Repositories</h2>
-    <ul>
+    <div style="margin-top: 40px;">
+        <div style="display: inline-flex; align-items: center; gap: 12px;">
+            <h2 style="margin: 0;">Recent Repositories</h2>
+            {% if user %}
+                <div>
+                    <button onclick="document.getElementById('create-form').style.display='inline'; this.style.display='none';">
+                        Create Repository
+                    </button>
+                    <form id="create-form" action="/create_repo" method="post" style="display: none; margin: 0;">
+                        <input type="text" name="repo_name" placeholder="Repository name" required>
+                        <button type="submit">Create</button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+
+    <ul style="margin-top: 20px;">
         {% for repo in repos %}
             <li>
                 <a href="/{{ repo.username }}/{{ repo.name }}">{{ repo.username }}/{{ repo.name }}</a>
