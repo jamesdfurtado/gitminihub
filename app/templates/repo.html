@@ -5,6 +5,11 @@
 </head>
 <body>
     <h1>{{ username }} / {{ repo_name }}</h1>
-    <p>This is a placeholder repo view page.</p>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% else %}
+        <p>This is a placeholder repo view page.</p>
+    {% endif %}
 </body>
 </html>
