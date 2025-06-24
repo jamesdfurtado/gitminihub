@@ -7,7 +7,7 @@ from datetime import datetime, UTC
 # user content "database"
 users_path = "app/data/users.json"
 RESERVED_USERNAMES = {
-    "login", "logout", "signup", "search", "static", "admin", "user", "api"
+    "login", "logout", "signup", "search", "static", "admin", "user", "api", "create_repo"
 }
 
 # For validating cookies
@@ -71,3 +71,22 @@ def create_repo_entry(name: str) -> dict:
         "created_at": datetime.now(UTC).isoformat(),
         "path": ""  # empty for now, logic will be coded when remote file storage is added.
     }
+
+# Creates a new repo (just like clicking "Create repo" button on GitHub)
+def add_repo_to_user(users: dict, username: str, repo_name: str) -> str | None:
+    """
+    Adds a new repo to the given user if it doesn't already exist.
+    Returns an error message string if there's a problem, or None if success.
+    """
+    normalized = normalize_username(repo_name)
+    user_data = users.get(username)
+
+    if not user_data:
+        return "User not found"
+
+    if any(r["name"] == normalized for r in user_data["repos"]):
+        return "Repository already exists"
+
+    user_data["repos"].append(create_repo_entry(normalized))
+    return None
+
