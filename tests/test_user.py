@@ -1,5 +1,7 @@
 import json
 from tests.test_helpers import AppTestCase
+from app.pages.utils import create_repo_entry
+from passlib.hash import bcrypt
 
 class UserTests(AppTestCase):
 
@@ -45,3 +47,45 @@ class UserTests(AppTestCase):
         resp = self.client.get("/ghostuser")
         self.assertEqual(resp.status_code, 200)
         self.assertIn("User does not exist", resp.text)
+
+    def test_create_repo_authenticated_success(self):
+        """ Logged in users can create repos on profile page. """
+        users = {
+            "alex": {
+                "password_hash": bcrypt.hash("secret"),
+                "repos": []
+            }
+        }
+        with open(self.users_path, "w") as f:
+            json.dump(users, f)
+
+        self.client.cookies.set("session", self.serializer.dumps("alex"))
+        resp = self.client.post("/create_repo", data={"repo_name": "testrepo"}, follow_redirects=False)
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn("/alex/testrepo", resp.headers["location"])
+
+        with open(self.users_path) as f:
+            data = json.load(f)
+        self.assertTrue(any(r["name"] == "testrepo" for r in data["alex"]["repos"]))
+
+    def test_create_repo_duplicate_name_rejected(self):
+        """ Duplicate repo names are rejected """
+        users = {
+            "sam": {
+                "password_hash": bcrypt.hash("pw"),
+                "repos": [create_repo_entry("dupe")]
+            }
+        }
+        with open(self.users_path, "w") as f:
+            json.dump(users, f)
+
+        self.client.cookies.set("session", self.serializer.dumps("sam"))
+        resp = self.client.post("/create_repo", data={"repo_name": "dupe"}, follow_redirects=False)
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn("/?error=Repository%20already%20exists", resp.headers["location"])
+
+    def test_create_repo_requires_login_redirects(self):
+        """ Not logged in users cannot create repo """
+        resp = self.client.post("/create_repo", data={"repo_name": "shouldfail"}, follow_redirects=False)
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp.headers["location"], "/login")

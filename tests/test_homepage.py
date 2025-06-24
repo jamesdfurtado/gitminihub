@@ -1,5 +1,6 @@
 import json
 from tests.test_helpers import AppTestCase
+from passlib.hash import bcrypt
 
 class HomepageTests(AppTestCase):
     
@@ -74,3 +75,25 @@ class HomepageTests(AppTestCase):
         resp = self.client.get("/search?repo=somerepo", follow_redirects=True)
         self.assertEqual(resp.status_code, 200)
         self.assertIn("Please specify a user", resp.text)
+
+    def test_homepage_repo_creation_success(self):
+        """ Users can create a repo from homepage if logged in """
+        users = {
+            "john": {
+                "password_hash": bcrypt.hash("pw"),
+                "repos": []
+            }
+        }
+        with open(self.users_path, "w") as f:
+            json.dump(users, f)
+
+        self.client.cookies.set("session", self.serializer.dumps("john"))
+        resp = self.client.post("/create_repo", data={"repo_name": "newhomepage"}, follow_redirects=False)
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn("/john/newhomepage", resp.headers["location"])
+
+    def test_homepage_create_repo_without_login_redirects(self):
+        """ Not logged in users cannot create repos """
+        resp = self.client.post("/create_repo", data={"repo_name": "x"}, follow_redirects=False)
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp.headers["location"], "/login")
