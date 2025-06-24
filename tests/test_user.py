@@ -9,7 +9,11 @@ class UserTests(AppTestCase):
             json.dump({
                 "charlie": {
                     "password_hash": "fake",
-                    "repos": ["my-repo", "weatherapp", "cool-stuff"]
+                    "repos": [
+                        {"name": "my-repo", "created_at": "2025-06-24T00:00:00+00:00", "path": ""},
+                        {"name": "weatherapp", "created_at": "2025-06-23T00:00:00+00:00", "path": ""},
+                        {"name": "cool-stuff", "created_at": "2025-06-22T00:00:00+00:00", "path": ""}
+                    ]
                 }
             }, f)
 

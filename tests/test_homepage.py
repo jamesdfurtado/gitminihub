@@ -27,7 +27,16 @@ class HomepageTests(AppTestCase):
     def test_search_with_user_and_repo_redirect(self):
         """ Test that "User" and "Repository" bar redirects to a repository """
         with open(self.users_path, "w") as f:
-            json.dump({"jane": {"password_hash": "hash", "repos": ["repo1"]}}, f)
+            json.dump({
+                "jane": {
+                    "password_hash": "hash",
+                    "repos": [{
+                        "name": "repo1",
+                        "created_at": "2025-06-24T00:00:00+00:00",
+                        "path": ""
+                    }]
+                }
+            }, f)
 
         resp = self.client.get("/search?user=jane&repo=repo1", follow_redirects=False)
         self.assertIn(resp.status_code, (302, 307))
@@ -45,7 +54,16 @@ class HomepageTests(AppTestCase):
     def test_search_invalid_repo(self):
         """ Valid user but nonexistent repo returns error """
         with open(self.users_path, "w") as f:
-            json.dump({"validuser": {"password_hash": "x", "repos": ["goodrepo"]}}, f)
+            json.dump({
+                "validuser": {
+                    "password_hash": "x",
+                    "repos": [{
+                        "name": "goodrepo",
+                        "created_at": "2025-06-24T00:00:00+00:00",
+                        "path": ""
+                    }]
+                }
+            }, f)
 
         resp = self.client.get("/search?user=validuser&repo=badrepo", follow_redirects=True)
         self.assertEqual(resp.status_code, 200)

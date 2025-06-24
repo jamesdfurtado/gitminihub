@@ -42,7 +42,16 @@ class SessionTests(AppTestCase):
     def test_session_persists_across_pages(self):
         """ Session remains active across multiple routes """
         with open(self.users_path, "w") as f:
-            json.dump({"testuser": {"password_hash": bcrypt.hash("pw"), "repos": ["repo1"]}}, f)
+            json.dump({
+                "testuser": {
+                    "password_hash": bcrypt.hash("pw"),
+                    "repos": [{
+                        "name": "repo1",
+                        "created_at": "2025-06-24T00:00:00+00:00",
+                        "path": ""
+                    }]
+                }
+            }, f)
 
         cookie = self.serializer.dumps("testuser")
         self.client.cookies.set("session", cookie)
@@ -58,4 +67,3 @@ class SessionTests(AppTestCase):
         # Visit repo page
         resp_repo = self.client.get("/testuser/repo1")
         self.assertIn("Log Out", resp_repo.text)
-
