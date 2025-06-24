@@ -1,32 +1,20 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>GitMiniHub</title>
-</head>
-<body>
-    <h1>Welcome to GitMiniHub</h1>
-    <p>This is the homepage</p>
+{% extends "base.html" %}
 
-    {% if error %}
-        <p style="color:red;">{{ error }}</p>
-    {% endif %}
+{% block title %}GitMiniHub{% endblock %}
 
-    <form action="/search" method="get">
-        <label>User:</label>
-        <input type="text" name="user"><br><br>
-        <label>Repository:</label>
-        <input type="text" name="repo"><br><br>
-        <button type="submit">Search</button>
-    </form>
+{% block content %}
+<h1>Welcome to GitMiniHub</h1>
+<p>This is the homepage</p>
 
-    <br>
+{% if error %}
+    <p style="color:red;">{{ error }}</p>
+{% endif %}
 
-    {% if user %}
-        <p>Signed in as <strong>{{ user }}</strong></p>
-        <a href="/logout"><button>Log Out</button></a>
-    {% else %}
-        <a href="/signup"><button>Sign Up</button></a>
-        <a href="/login"><button>Log In</button></a>
-    {% endif %}
-</body>
-</html>
+<form action="/search" method="get">
+    <label>User:</label>
+    <input type="text" name="user"><br><br>
+    <label>Repository:</label>
+    <input type="text" name="repo"><br><br>
+    <button type="submit">Search</button>
+</form>
+{% endblock %}

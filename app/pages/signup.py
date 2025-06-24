@@ -8,6 +8,7 @@ from app.pages.utils import (
     is_invalid_username,
     is_invalid_password,
     hash_password,
+    get_current_user,
 )
 
 router = APIRouter()
@@ -15,7 +16,8 @@ templates = Jinja2Templates(directory="app/templates")
 
 @router.get("/signup", response_class=HTMLResponse)
 async def signup_page(request: Request):
-    return templates.TemplateResponse(request, "signup.html")
+    user = get_current_user(request)
+    return templates.TemplateResponse(request, "signup.html", {"user": user})
 
 @router.post("/signup")
 async def signup(
@@ -23,14 +25,18 @@ async def signup(
     username: str = Form(...),
     password: str = Form(...)
 ):
+    user = get_current_user(request)
+
     if is_invalid_username(username):
         return templates.TemplateResponse(request, "signup.html", {
-            "error": "Invalid username. Use only lowercase letters, numbers, or dashes."
+            "error": "Invalid username. Use only lowercase letters, numbers, or dashes.",
+            "user": user
         })
 
     if is_invalid_password(password):
         return templates.TemplateResponse(request, "signup.html", {
-            "error": "Password cannot contain spaces."
+            "error": "Password cannot contain spaces.",
+            "user": user
         })
 
     normalized = normalize_username(username)
@@ -38,7 +44,8 @@ async def signup(
 
     if normalized in users:
         return templates.TemplateResponse(request, "signup.html", {
-            "error": "Username already exists."
+            "error": "Username already exists.",
+            "user": user
         })
 
     users[normalized] = {

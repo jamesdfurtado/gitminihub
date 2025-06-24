@@ -1,27 +1,24 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Sign Up – GitMiniHub</title>
-    <script src="/static/javascript/togglePassword.js" defer></script>
-</head>
-<body>
-    <h1>Create your GitMiniHub account</h1>
+{% extends "base.html" %}
 
-    {% if error %}
-        <p style="color:red;">{{ error }}</p>
-    {% endif %}
+{% block title %}Sign Up – GitMiniHub{% endblock %}
 
-    <form method="post" action="/signup">
-        <label>Username:</label>
-        <input type="text" name="username" required><br><br>
+{% block content %}
+<h1>Create your GitMiniHub account</h1>
 
-        <label>Password:</label>
-        <input type="password" id="password" name="password" required>
-        <button type="button" id="toggle-btn" onclick="togglePassword()">See Password</button><br><br>
+{% if error %}
+    <p style="color:red;">{{ error }}</p>
+{% endif %}
 
-        <button type="submit">Sign Up</button>
-    </form>
+<form method="post" action="/signup">
+    <label>Username:</label>
+    <input type="text" name="username" required><br><br>
 
-    <p>Already have an account? <a href="/login">Log in</a></p>
-</body>
-</html>
+    <label>Password:</label>
+    <input type="password" id="password" name="password" required>
+    <button type="button" id="toggle-btn" onclick="togglePassword()">See Password</button><br><br>
+
+    <button type="submit">Sign Up</button>
+</form>
+
+<p>Already have an account? <a href="/login">Log in</a></p>
+{% endblock %}

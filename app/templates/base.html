@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}GitMiniHub{% endblock %}</title>
+</head>
+<body>
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #ccc;">
+        <a href="/" style="font-weight: bold; font-size: 18px;">GitMiniHub</a>
+        <div>
+            {% if user %}
+                <a href="/{{ user }}" style="margin-right: 10px;">{{ user }}</a>
+                <a href="/logout"><button>Log Out</button></a>
+            {% else %}
+                <a href="/signup"><button>Sign Up</button></a>
+                <a href="/login"><button>Log In</button></a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div style="padding: 20px;">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

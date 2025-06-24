@@ -1,21 +1,19 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ username }} - GitMiniHub</title>
-</head>
-<body>
-    <h1>{{ username }}'s Repositories</h1>
+{% extends "base.html" %}
 
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% elif repos and repos|length > 0 %}
-        <ul>
-            {% for repo in repos %}
-                <li><a href="/{{ username }}/{{ repo }}">{{ repo }}</a></li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>{{ username }} currently has no repositories.</p>
-    {% endif %}
-</body>
-</html>
+{% block title %}{{ username }} – GitMiniHub{% endblock %}
+
+{% block content %}
+<h1>{{ username }}'s Repositories</h1>
+
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% elif repos and repos|length > 0 %}
+    <ul>
+        {% for repo in repos %}
+            <li><a href="/{{ username }}/{{ repo }}">{{ repo }}</a></li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>{{ username }} currently has no repositories.</p>
+{% endif %}
+{% endblock %}

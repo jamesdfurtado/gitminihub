@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from app.pages.utils import load_users, normalize_username
+from app.pages.utils import load_users, normalize_username, get_current_user
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
 @router.get("/{username}", response_class=HTMLResponse)
 async def user_profile(request: Request, username: str):
+    current_user = get_current_user(request)
     username = normalize_username(username)
     users = load_users()
 
@@ -15,11 +16,13 @@ async def user_profile(request: Request, username: str):
         return templates.TemplateResponse(request, "user.html", {
             "error": "User does not exist",
             "username": username,
-            "repos": []
+            "repos": [],
+            "user": current_user
         })
 
     repos = users[username]["repos"]
     return templates.TemplateResponse(request, "user.html", {
         "username": username,
-        "repos": repos
+        "repos": repos,
+        "user": current_user
     })

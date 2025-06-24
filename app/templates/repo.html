@@ -1,15 +1,13 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ repo_name }} - GitMiniHub</title>
-</head>
-<body>
-    <h1>{{ username }} / {{ repo_name }}</h1>
+{% extends "base.html" %}
 
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% else %}
-        <p>This is a placeholder repo view page.</p>
-    {% endif %}
-</body>
-</html>
+{% block title %}{{ repo_name }} – GitMiniHub{% endblock %}
+
+{% block content %}
+<h1>{{ username }} / {{ repo_name }}</h1>
+
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% else %}
+    <p>This is a placeholder repo view page.</p>
+{% endif %}
+{% endblock %}

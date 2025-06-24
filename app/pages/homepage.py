@@ -13,29 +13,30 @@ async def homepage(request: Request):
 
 @router.get("/search", response_class=HTMLResponse)
 async def search(request: Request, user: str = "", repo: str = ""):
+    current_user = get_current_user(request)
     user = normalize_username(user)
     users = load_users()
 
-    # No user input: show error
     if not user:
         return templates.TemplateResponse(request, "index.html", {
-            "error": "Please specify a user"
+            "error": "Please specify a user",
+            "user": current_user
         })
 
-    # User doesn't exist
     if user not in users:
         return templates.TemplateResponse(request, "index.html", {
-            "error": "User does not exist"
+            "error": "User does not exist",
+            "user": current_user
         })
 
-    # User exists, check repo
     if repo:
         if repo in users[user]["repos"]:
             return RedirectResponse(url=f"/{user}/{repo}")
         else:
             return templates.TemplateResponse(request, "index.html", {
-                "error": "Repository does not exist"
+                "error": "Repository does not exist",
+                "user": current_user
             })
 
-    # Redirect to user's profile page
     return RedirectResponse(url=f"/{user}")
+
