@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
 from app.pages import homepage, user, repo, signup, login, logout
 from dotenv import load_dotenv
@@ -6,8 +6,19 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = FastAPI()
+
+# Prevent caching globally
+@app.middleware("http")
+async def disable_caching(request: Request, call_next):
+    response: Response = await call_next(request)
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    return response
+
+# Mount static files
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
+# Include routers
 app.include_router(signup.router)
 app.include_router(login.router)
 app.include_router(logout.router)
