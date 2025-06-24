@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from app.pages.utils import get_current_user
+from app.pages.utils import get_current_user, load_users, normalize_username
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -13,12 +13,29 @@ async def homepage(request: Request):
 
 @router.get("/search", response_class=HTMLResponse)
 async def search(request: Request, user: str = "", repo: str = ""):
+    user = normalize_username(user)
+    users = load_users()
+
+    # No user input: show error
     if not user:
+        return templates.TemplateResponse(request, "index.html", {
+            "error": "Please specify a user"
+        })
+
+    # User doesn't exist
+    if user not in users:
         return templates.TemplateResponse(request, "index.html", {
             "error": "User does not exist"
         })
 
+    # User exists, check repo
     if repo:
-        return RedirectResponse(url=f"/{user}/{repo}")
-    else:
-        return RedirectResponse(url=f"/{user}")
+        if repo in users[user]["repos"]:
+            return RedirectResponse(url=f"/{user}/{repo}")
+        else:
+            return templates.TemplateResponse(request, "index.html", {
+                "error": "Repository does not exist"
+            })
+
+    # Redirect to user's profile page
+    return RedirectResponse(url=f"/{user}")

@@ -1,14 +1,24 @@
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from app.pages.utils import load_users, normalize_username
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
 @router.get("/{username}", response_class=HTMLResponse)
 async def user_profile(request: Request, username: str):
+    username = normalize_username(username)
+    users = load_users()
 
-    repos = ["my-repo", "weatherapp", "cool-stuff"]
+    if username not in users:
+        return templates.TemplateResponse(request, "user.html", {
+            "error": "User does not exist",
+            "username": username,
+            "repos": []
+        })
+
+    repos = users[username]["repos"]
     return templates.TemplateResponse(request, "user.html", {
         "username": username,
         "repos": repos
