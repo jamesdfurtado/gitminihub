@@ -32,3 +32,27 @@ class HomepageTests(AppTestCase):
         resp = self.client.get("/search?user=jane&repo=repo1", follow_redirects=False)
         self.assertIn(resp.status_code, (302, 307))
         self.assertEqual(resp.headers["location"], "/jane/repo1")
+
+    def test_search_invalid_user(self):
+        """ Search with nonexistent user returns error """
+        with open(self.users_path, "w") as f:
+            json.dump({}, f)
+
+        resp = self.client.get("/search?user=ghost", follow_redirects=True)
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("User does not exist", resp.text)
+
+    def test_search_invalid_repo(self):
+        """ Valid user but nonexistent repo returns error """
+        with open(self.users_path, "w") as f:
+            json.dump({"validuser": {"password_hash": "x", "repos": ["goodrepo"]}}, f)
+
+        resp = self.client.get("/search?user=validuser&repo=badrepo", follow_redirects=True)
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("Repository does not exist", resp.text)
+
+    def test_search_repo_only_fails(self):
+        """ Only filling repo bar returns error """
+        resp = self.client.get("/search?repo=somerepo", follow_redirects=True)
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("Please specify a user", resp.text)
