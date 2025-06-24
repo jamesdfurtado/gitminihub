@@ -55,3 +55,4 @@ async def signup(
     save_users(users)
 
     return RedirectResponse("/login", status_code=302)
+

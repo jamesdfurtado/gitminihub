@@ -2,6 +2,7 @@ import os, json, re
 from passlib.hash import bcrypt
 from itsdangerous import URLSafeSerializer
 from fastapi import Request
+from datetime import datetime, UTC
 
 # user content "database"
 users_path = "app/data/users.json"
@@ -62,3 +63,11 @@ def get_current_user(request: Request) -> str | None:
         return username
     except Exception:
         return None
+
+
+def create_repo_entry(name: str) -> dict:
+    return {
+        "name": name,
+        "created_at": datetime.now(UTC).isoformat(),
+        "path": ""  # empty for now, logic will be coded when remote file storage is added.
+    }

@@ -10,7 +10,10 @@
 {% elif repos and repos|length > 0 %}
     <ul>
         {% for repo in repos %}
-            <li><a href="/{{ username }}/{{ repo }}">{{ repo }}</a></li>
+            <li>
+                <a href="/{{ username }}/{{ repo.name }}">{{ repo.name }}</a>
+                <small style="color: gray;">— {{ repo.created_at }}</small>
+            </li>
         {% endfor %}
     </ul>
 {% else %}

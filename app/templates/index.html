@@ -4,7 +4,6 @@
 
 {% block content %}
 <h1>Welcome to GitMiniHub</h1>
-<p>This is the homepage</p>
 
 {% if error %}
     <p style="color:red;">{{ error }}</p>
@@ -17,4 +16,16 @@
     <input type="text" name="repo"><br><br>
     <button type="submit">Search</button>
 </form>
+
+{% if repos %}
+    <h2 style="margin-top: 40px;">Recent Repositories</h2>
+    <ul>
+        {% for repo in repos %}
+            <li>
+                <a href="/{{ repo.username }}/{{ repo.name }}">{{ repo.username }}/{{ repo.name }}</a>
+                <small style="color: gray;">— {{ repo.created_at }}</small>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
 {% endblock %}

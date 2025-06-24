@@ -9,7 +9,24 @@ templates = Jinja2Templates(directory="app/templates")
 @router.get("/", response_class=HTMLResponse)
 async def homepage(request: Request):
     user = get_current_user(request)
-    return templates.TemplateResponse(request, "index.html", {"user": user})
+    users = load_users()
+
+    all_repos = []
+    for username, data in users.items():
+        for repo in data["repos"]:
+            all_repos.append({
+                "username": username,
+                "name": repo["name"],
+                "created_at": repo["created_at"]
+            })
+
+    all_repos.sort(key=lambda r: r["created_at"], reverse=True)
+
+    return templates.TemplateResponse(request, "index.html", {
+        "user": user,
+        "repos": all_repos
+    })
+
 
 @router.get("/search", response_class=HTMLResponse)
 async def search(request: Request, user: str = "", repo: str = ""):

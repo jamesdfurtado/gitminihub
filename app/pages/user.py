@@ -20,9 +20,10 @@ async def user_profile(request: Request, username: str):
             "user": current_user
         })
 
-    repos = users[username]["repos"]
+    repos = sorted(users[username]["repos"], key=lambda r: r["created_at"], reverse=True)
     return templates.TemplateResponse(request, "user.html", {
         "username": username,
         "repos": repos,
         "user": current_user
     })
+

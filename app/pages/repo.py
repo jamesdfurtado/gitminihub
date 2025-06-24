@@ -12,7 +12,16 @@ async def view_repo(request: Request, username: str, repo_name: str):
     username = normalize_username(username)
     users = load_users()
 
-    if username not in users or repo_name not in users[username]["repos"]:
+    if username not in users:
+        return templates.TemplateResponse(request, "repo.html", {
+            "username": username,
+            "repo_name": repo_name,
+            "error": "Repository does not exist",
+            "user": current_user
+        })
+
+    repo_entry = next((r for r in users[username]["repos"] if r["name"] == repo_name), None)
+    if not repo_entry:
         return templates.TemplateResponse(request, "repo.html", {
             "username": username,
             "repo_name": repo_name,
@@ -22,6 +31,7 @@ async def view_repo(request: Request, username: str, repo_name: str):
 
     return templates.TemplateResponse(request, "repo.html", {
         "username": username,
-        "repo_name": repo_name,
+        "repo_name": repo_entry["name"],
         "user": current_user
     })
+
