@@ -27,7 +27,6 @@ async def homepage(request: Request):
         "repos": all_repos
     })
 
-
 @router.get("/search", response_class=HTMLResponse)
 async def search(request: Request, user: str = "", repo: str = ""):
     current_user = get_current_user(request)
@@ -47,7 +46,7 @@ async def search(request: Request, user: str = "", repo: str = ""):
         })
 
     if repo:
-        if repo in users[user]["repos"]:
+        if any(r["name"] == repo for r in users[user]["repos"]):
             return RedirectResponse(url=f"/{user}/{repo}")
         else:
             return templates.TemplateResponse(request, "index.html", {
@@ -56,4 +55,3 @@ async def search(request: Request, user: str = "", repo: str = ""):
             })
 
     return RedirectResponse(url=f"/{user}")
-
