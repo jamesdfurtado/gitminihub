@@ -97,3 +97,30 @@ class HomepageTests(AppTestCase):
         resp = self.client.post("/create_repo", data={"repo_name": "x"}, follow_redirects=False)
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(resp.headers["location"], "/login")
+
+    def test_search_does_not_clear_recent_repos(self):
+        """ Searching should not erase recent repo history from homepage """
+        users = {
+            "bob": {
+                "password_hash": bcrypt.hash("pw"),
+                "repos": [
+                    {
+                        "name": "alpha",
+                        "created_at": "2025-06-24T00:00:00+00:00",
+                        "path": ""
+                    }
+                ]
+            }
+        }
+
+        with open(self.users_path, "w") as f:
+            json.dump(users, f)
+
+        # Vist the repo (adds to session cookie)
+        self.client.cookies.set("session", self.serializer.dumps("bob"))
+        self.client.get("/bob/alpha")
+
+        # Use search bar
+        resp = self.client.get("/search?user=ghost", follow_redirects=True)
+        self.assertIn("Recent Repositories", resp.text)
+        self.assertIn("bob/alpha", resp.text)

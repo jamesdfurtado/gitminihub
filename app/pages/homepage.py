@@ -53,16 +53,29 @@ async def search(request: Request, user: str = "", repo: str = ""):
     user = normalize_username(user)
     users = load_users()
 
+    # build recent repo list just like homepage
+    all_repos = []
+    for username, data in users.items():
+        for r in data["repos"]:
+            all_repos.append({
+                "username": username,
+                "name": r["name"],
+                "created_at": r["created_at"]
+            })
+    all_repos.sort(key=lambda r: r["created_at"], reverse=True)
+
     if not user:
         return templates.TemplateResponse(request, "index.html", {
             "error": "Please specify a user",
-            "user": current_user
+            "user": current_user,
+            "repos": all_repos
         })
 
     if user not in users:
         return templates.TemplateResponse(request, "index.html", {
             "error": "User does not exist",
-            "user": current_user
+            "user": current_user,
+            "repos": all_repos
         })
 
     if repo:
@@ -71,7 +84,8 @@ async def search(request: Request, user: str = "", repo: str = ""):
         else:
             return templates.TemplateResponse(request, "index.html", {
                 "error": "Repository does not exist",
-                "user": current_user
+                "user": current_user,
+                "repos": all_repos
             })
 
     return RedirectResponse(url=f"/{user}")
