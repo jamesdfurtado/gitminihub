@@ -15,8 +15,7 @@ async def view_repo(request: Request, username: str, repo_name: str):
     users = load_users()
 
     if username not in users:
-        return templates.TemplateResponse("repo.html", {
-            "request": request,
+        return templates.TemplateResponse(request, "repo.html", {
             "username": username,
             "repo_name": repo_name,
             "error": "Repository does not exist",
@@ -25,16 +24,14 @@ async def view_repo(request: Request, username: str, repo_name: str):
 
     repo_entry = next((r for r in users[username]["repos"] if r["name"] == repo_name), None)
     if not repo_entry:
-        return templates.TemplateResponse("repo.html", {
-            "request": request,
+        return templates.TemplateResponse(request, "repo.html", {
             "username": username,
             "repo_name": repo_name,
             "error": "Repository does not exist",
             "user": current_user
         })
 
-    return templates.TemplateResponse("repo.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "repo.html", {
         "username": username,
         "repo_name": repo_entry["name"],
         "user": current_user
@@ -47,8 +44,7 @@ async def delete_repo(request: Request, username: str, repo_name: str, confirm_n
     users = load_users()
 
     if not current_user or current_user != username:
-        return templates.TemplateResponse("repo.html", {
-            "request": request,
+        return templates.TemplateResponse(request, "repo.html", {
             "username": username,
             "repo_name": repo_name,
             "error": "You do not have permission to delete this repository.",
@@ -58,8 +54,7 @@ async def delete_repo(request: Request, username: str, repo_name: str, confirm_n
     user_repos = users.get(username, {}).get("repos", [])
     repo_entry = next((r for r in user_repos if r["name"] == repo_name), None)
     if not repo_entry:
-        return templates.TemplateResponse("repo.html", {
-            "request": request,
+        return templates.TemplateResponse(request, "repo.html", {
             "username": username,
             "repo_name": repo_name,
             "error": "Repository does not exist.",
@@ -67,8 +62,7 @@ async def delete_repo(request: Request, username: str, repo_name: str, confirm_n
         })
 
     if confirm_name.strip() != repo_name:
-        return templates.TemplateResponse("repo.html", {
-            "request": request,
+        return templates.TemplateResponse(request, "repo.html", {
             "username": username,
             "repo_name": repo_name,
             "error": "Confirmation name does not match.",
