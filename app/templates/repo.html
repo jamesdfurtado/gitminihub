@@ -3,11 +3,31 @@
 {% block title %}{{ repo_name }} – GitMiniHub{% endblock %}
 
 {% block content %}
-<h1>{{ username }} / {{ repo_name }}</h1>
+<h1>
+  {{ username }} / {{ repo_name }}
+  {% if user and user == username %}
+    <button onclick="toggleDeleteForm()" style="margin-left: 10px;">Delete Repository</button>
+  {% endif %}
+</h1>
 
 {% if error %}
     <p style="color: red;">{{ error }}</p>
 {% else %}
     <p>This is a placeholder repo view page.</p>
+
+    {% if user and user == username %}
+    <form id="delete-form" method="POST" style="display: none;" onsubmit="return confirmDelete();">
+        <label>Type the repository name to confirm deletion:</label><br>
+        <input type="text" name="confirm_name" required><br><br>
+        <button type="submit">Confirm Deletion</button>
+    </form>
+
+    <script>
+        function toggleDeleteForm() {
+            const form = document.getElementById('delete-form');
+            form.style.display = 'block';
+        }
+    </script>
+    {% endif %}
 {% endif %}
 {% endblock %}
