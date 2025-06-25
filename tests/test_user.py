@@ -1,23 +1,17 @@
-import json
 from tests.test_helpers import AppTestCase
 from app.pages.utils import create_repo_entry
-from passlib.hash import bcrypt
+import json
 
 class UserTests(AppTestCase):
 
     def test_user_profile(self):
         """ Test that a user’s profile page shows their repos correctly. """
-        with open(self.users_path, "w") as f:
-            json.dump({
-                "charlie": {
-                    "password_hash": "fake",
-                    "repos": [
-                        {"name": "my-repo", "created_at": "2025-06-24T00:00:00+00:00", "path": ""},
-                        {"name": "weatherapp", "created_at": "2025-06-23T00:00:00+00:00", "path": ""},
-                        {"name": "cool-stuff", "created_at": "2025-06-22T00:00:00+00:00", "path": ""}
-                    ]
-                }
-            }, f)
+        repos = [
+            self.create_repo("my-repo", created_at="2025-06-24T00:00:00+00:00"),
+            self.create_repo("weatherapp", created_at="2025-06-23T00:00:00+00:00"),
+            self.create_repo("cool-stuff", created_at="2025-06-22T00:00:00+00:00")
+        ]
+        self.create_user("charlie", repos=repos)
 
         resp = self.client.get("/charlie")
         self.assertEqual(resp.status_code, 200)
@@ -27,39 +21,22 @@ class UserTests(AppTestCase):
 
     def test_user_with_no_repos(self):
         """ User profile with no repos loads correctly """
-        with open(self.users_path, "w") as f:
-            json.dump({
-                "norepos": {
-                    "password_hash": "fake",
-                    "repos": []
-                }
-            }, f)
-
+        self.create_user("norepos", repos=[])
         resp = self.client.get("/norepos")
         self.assertEqual(resp.status_code, 200)
         self.assertIn("norepos currently has no repositories", resp.text)
 
     def test_nonexistent_user_profile(self):
         """ Nonexistent user profile returns error """
-        with open(self.users_path, "w") as f:
-            json.dump({}, f)
-
+        self.clear_users()
         resp = self.client.get("/ghostuser")
         self.assertEqual(resp.status_code, 200)
         self.assertIn("User does not exist", resp.text)
 
     def test_create_repo_authenticated_success(self):
         """ Logged in users can create repos on profile page. """
-        users = {
-            "alex": {
-                "password_hash": bcrypt.hash("secret"),
-                "repos": []
-            }
-        }
-        with open(self.users_path, "w") as f:
-            json.dump(users, f)
-
-        self.client.cookies.set("session", self.serializer.dumps("alex"))
+        self.create_user("alex", password="secret", repos=[])
+        self.login_as("alex")
         resp = self.client.post("/create_repo", data={"repo_name": "testrepo"}, follow_redirects=False)
         self.assertEqual(resp.status_code, 302)
         self.assertIn("/alex/testrepo", resp.headers["location"])
@@ -70,16 +47,9 @@ class UserTests(AppTestCase):
 
     def test_create_repo_duplicate_name_rejected(self):
         """ Duplicate repo names are rejected """
-        users = {
-            "sam": {
-                "password_hash": bcrypt.hash("pw"),
-                "repos": [create_repo_entry("dupe")]
-            }
-        }
-        with open(self.users_path, "w") as f:
-            json.dump(users, f)
-
-        self.client.cookies.set("session", self.serializer.dumps("sam"))
+        dupe_repo = create_repo_entry("dupe")  # uses the same util used by production code
+        self.create_user("sam", repos=[dupe_repo])
+        self.login_as("sam")
         resp = self.client.post("/create_repo", data={"repo_name": "dupe"}, follow_redirects=False)
         self.assertEqual(resp.status_code, 302)
         self.assertIn("/?error=Repository%20already%20exists", resp.headers["location"])

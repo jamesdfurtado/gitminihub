@@ -1,16 +1,11 @@
-import json
-from passlib.hash import bcrypt
 from tests.test_helpers import AppTestCase
 
 class SessionTests(AppTestCase):
 
     def test_valid_session_cookie_recognized(self):
         """ Validate login session reflects in UI header. """
-        with open(self.users_path, "w") as f:
-            json.dump({"testuser": {"password_hash": bcrypt.hash("pw"), "repos": []}}, f)
-
-        cookie = self.serializer.dumps("testuser")
-        self.client.cookies.set("session", cookie)
+        self.create_user("testuser")
+        self.login_as("testuser")
         resp = self.client.get("/")
         self.assertIn('<a href="/testuser"', resp.text)
         self.assertIn("Log Out", resp.text)
@@ -41,20 +36,9 @@ class SessionTests(AppTestCase):
 
     def test_session_persists_across_pages(self):
         """ Session remains active across multiple routes """
-        with open(self.users_path, "w") as f:
-            json.dump({
-                "testuser": {
-                    "password_hash": bcrypt.hash("pw"),
-                    "repos": [{
-                        "name": "repo1",
-                        "created_at": "2025-06-24T00:00:00+00:00",
-                        "path": ""
-                    }]
-                }
-            }, f)
-
-        cookie = self.serializer.dumps("testuser")
-        self.client.cookies.set("session", cookie)
+        repo = self.create_repo("repo1", created_at="2025-06-24T00:00:00+00:00")
+        self.create_user("testuser", repos=[repo])
+        self.login_as("testuser")
 
         # Visit homepage
         resp_home = self.client.get("/")

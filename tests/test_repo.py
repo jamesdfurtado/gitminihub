@@ -1,32 +1,20 @@
-import json
-import os
-from passlib.hash import bcrypt
 from tests.test_helpers import AppTestCase
+import json
 
 class RepoTests(AppTestCase):
 
-    def create_user(self, username, password="pw", repos=None):
-        """Helper to write a user to users.json"""
-        if repos is None:
-            repos = []
-        with open(self.users_path, "w") as f:
-            json.dump({username: {"password_hash": bcrypt.hash(password), "repos": repos}}, f)
-
-    def login_as(self, username):
-        """Helper to simulate logged-in session"""
-        cookie = self.serializer.dumps(username)
-        self.client.cookies.set("session", cookie)
-
     def test_guest_can_view_existing_repo(self):
         """ Guests can view existing repos """
-        self.create_user("james", repos=[{"name": "project"}])
+        repo = self.create_repo("project")
+        self.create_user("james", repos=[repo])
         resp = self.client.get("/james/project")
         self.assertIn("james / project", resp.text)
         self.assertIn("placeholder repo view", resp.text)
 
     def test_guest_cannot_see_delete_button(self):
         """ Guests cannot see delete repo button """
-        self.create_user("james", repos=[{"name": "project"}])
+        repo = self.create_repo("project")
+        self.create_user("james", repos=[repo])
         resp = self.client.get("/james/project")
         self.assertNotIn("Delete Repository", resp.text)
 
@@ -43,14 +31,16 @@ class RepoTests(AppTestCase):
 
     def test_user_can_view_own_repo(self):
         """ Signed-in user can view their own repo and see delete button """
-        self.create_user("james", repos=[{"name": "project"}])
+        repo = self.create_repo("project")
+        self.create_user("james", repos=[repo])
         self.login_as("james")
         resp = self.client.get("/james/project")
         self.assertIn("Delete Repository", resp.text)
 
     def test_user_cannot_see_delete_button_on_others_repo(self):
         """ Signed-in user cannot delete someone else's repo """
-        self.create_user("james", repos=[{"name": "project"}])
+        repo = self.create_repo("project")
+        self.create_user("james", repos=[repo])
         self.create_user("other")
         self.login_as("other")
         resp = self.client.get("/james/project")
@@ -73,7 +63,8 @@ class RepoTests(AppTestCase):
 
     def test_repo_delete_flow(self):
         """ User can delete their own repo after confirmation """
-        self.create_user("james", repos=[{"name": "project"}])
+        repo = self.create_repo("project")
+        self.create_user("james", repos=[repo])
         self.login_as("james")
 
         # Deletion request
@@ -92,14 +83,16 @@ class RepoTests(AppTestCase):
 
     def test_repo_delete_wrong_confirmation(self):
         """ Delete fails if confirmation name is incorrect """
-        self.create_user("james", repos=[{"name": "project"}])
+        repo = self.create_repo("project")
+        self.create_user("james", repos=[repo])
         self.login_as("james")
         resp = self.client.post("/james/project", data={"confirm_name": "wrong"})
         self.assertIn("Confirmation name does not match", resp.text)
 
     def test_repo_delete_blocked_if_not_owner(self):
         """ Non-owners can't delete repos """
-        self.create_user("james", repos=[{"name": "project"}])
+        repo = self.create_repo("project")
+        self.create_user("james", repos=[repo])
         self.create_user("intruder")
         self.login_as("intruder")
         resp = self.client.post("/james/project", data={"confirm_name": "project"})

@@ -1,6 +1,6 @@
-import json
 from tests.test_helpers import AppTestCase
 from app.pages.utils import RESERVED_USERNAMES
+import json
 
 class SignupTests(AppTestCase):
 
@@ -29,9 +29,7 @@ class SignupTests(AppTestCase):
 
     def test_signup_duplicate_username(self):
         """ Cannot create user with duplicate name. """
-        with open(self.users_path, "w") as f:
-            json.dump({"existing": {"password_hash": "hash", "repos": []}}, f)
-
+        self.create_user("existing")
         resp = self.client.post("/signup", data={"username": "existing", "password": "pwd"})
         self.assertIn("Username already exists.", resp.text)
 
@@ -47,13 +45,11 @@ class SignupTests(AppTestCase):
         self.assertIn("password_hash", saved["testuser"])
         self.assertIsInstance(saved["testuser"]["repos"], list)
 
-
     def test_signup_reserved_username_rejected(self):
         """ User cannot signup with blocked usernames. """
         for reserved in RESERVED_USERNAMES:
             resp = self.client.post("/signup", data={"username": reserved, "password": "somepass"})
             self.assertIn("Invalid username.", resp.text)
-
 
     def test_signup_password_with_space_rejected(self):
         """ Passwords with spaces not allowed. """
