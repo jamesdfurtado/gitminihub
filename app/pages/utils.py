@@ -64,12 +64,10 @@ def get_current_user(request: Request) -> str | None:
     except Exception:
         return None
 
-
 def create_repo_entry(name: str) -> dict:
     return {
         "name": name,
-        "created_at": datetime.now(UTC).isoformat(),
-        "path": ""  # empty for now, logic will be coded when remote file storage is added.
+        "created_at": datetime.now(UTC).isoformat()
     }
 
 # Creates a new repo (just like clicking "Create repo" button on GitHub)
@@ -89,4 +87,3 @@ def add_repo_to_user(users: dict, username: str, repo_name: str) -> str | None:
 
     user_data["repos"].append(create_repo_entry(normalized))
     return None
-

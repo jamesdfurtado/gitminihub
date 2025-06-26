@@ -37,7 +37,7 @@ async def view_repo(request: Request, username: str, repo_name: str):
         "user": current_user
     })
 
-@router.post("/{username}/{repo_name}", response_class=HTMLResponse)
+@router.post("/{username}/{repo_name}/delete", response_class=HTMLResponse)
 async def delete_repo(request: Request, username: str, repo_name: str, confirm_name: str = Form(...)):
     current_user = get_current_user(request)
     username = normalize_username(username)

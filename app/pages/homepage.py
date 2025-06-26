@@ -1,12 +1,10 @@
-from fastapi import APIRouter, Request, Form
+from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from app.pages.utils import (
     get_current_user,
     load_users,
-    save_users,
-    normalize_username,
-    add_repo_to_user
+    normalize_username
 )
 
 router = APIRouter()
@@ -33,27 +31,12 @@ async def homepage(request: Request):
         "repos": all_repos
     })
 
-@router.post("/create_repo", response_class=HTMLResponse)
-async def create_repo(request: Request, repo_name: str = Form(...)):
-    current_user = get_current_user(request)
-    if not current_user:
-        return RedirectResponse("/login", status_code=302)
-
-    users = load_users()
-    error = add_repo_to_user(users, current_user, repo_name)
-    if error:
-        return RedirectResponse(f"/?error={error}", status_code=302)
-
-    save_users(users)
-    return RedirectResponse(f"/{current_user}/{normalize_username(repo_name)}", status_code=302)
-
 @router.get("/search", response_class=HTMLResponse)
 async def search(request: Request, user: str = "", repo: str = ""):
     current_user = get_current_user(request)
     user = normalize_username(user)
     users = load_users()
 
-    # build recent repo list just like homepage
     all_repos = []
     for username, data in users.items():
         for r in data["repos"]:
