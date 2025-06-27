@@ -2,7 +2,7 @@ import json
 import os
 import re
 from tests.test_helpers import AppTestCase
-from app.pages import utils
+from app import utils
 
 class UtilsTests(AppTestCase):
 
@@ -26,13 +26,11 @@ class UtilsTests(AppTestCase):
         self.assertEqual(result, data)
 
     def test_create_repo_entry_structure(self):
-        """ Repos in users.json have correct fields/types. """
         entry = utils.create_repo_entry("myrepo")
         self.assertEqual(entry["name"], "myrepo")
         self.assertIn("created_at", entry)
-        self.assertIn("path", entry)
-        self.assertEqual(entry["path"], "")
         self.assertTrue(re.fullmatch(r"\d{4}-\d{2}-\d{2}T.*\+00:00", entry["created_at"]))
+
 
     def test_user_profile_sorts_repos_by_created_at_desc(self):
         """ User profile shows newest repo first """

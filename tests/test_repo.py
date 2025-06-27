@@ -67,8 +67,7 @@ class RepoTests(AppTestCase):
         self.create_user("james", repos=[repo])
         self.login_as("james")
 
-        # Deletion request
-        resp = self.client.post("/james/project", data={"confirm_name": "project"}, follow_redirects=False)
+        resp = self.client.post("/james/project/delete", data={"confirm_name": "project"}, follow_redirects=False)
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(resp.headers["location"], "/james")
 
@@ -86,7 +85,7 @@ class RepoTests(AppTestCase):
         repo = self.create_repo("project")
         self.create_user("james", repos=[repo])
         self.login_as("james")
-        resp = self.client.post("/james/project", data={"confirm_name": "wrong"})
+        resp = self.client.post("/james/project/delete", data={"confirm_name": "wrong"})
         self.assertIn("Confirmation name does not match", resp.text)
 
     def test_repo_delete_blocked_if_not_owner(self):
@@ -95,5 +94,5 @@ class RepoTests(AppTestCase):
         self.create_user("james", repos=[repo])
         self.create_user("intruder")
         self.login_as("intruder")
-        resp = self.client.post("/james/project", data={"confirm_name": "project"})
+        resp = self.client.post("/james/project/delete", data={"confirm_name": "project"})
         self.assertIn("do not have permission", resp.text)

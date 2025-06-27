@@ -52,16 +52,14 @@ class HomepageTests(AppTestCase):
         self.assertIn("Please specify a user", resp.text)
 
     def test_homepage_repo_creation_success(self):
-        """ Users can create a repo from homepage if logged in """
         self.create_user("john", password="pw", repos=[])
         self.login_as("john")
-        resp = self.client.post("/create_repo", data={"repo_name": "newhomepage"}, follow_redirects=False)
+        resp = self.client.post("/api/create_remote_repo", data={"repo_name": "newhomepage"}, follow_redirects=False)
         self.assertEqual(resp.status_code, 302)
         self.assertIn("/john/newhomepage", resp.headers["location"])
 
     def test_homepage_create_repo_without_login_redirects(self):
-        """ Not logged in users cannot create repos """
-        resp = self.client.post("/create_repo", data={"repo_name": "x"}, follow_redirects=False)
+        resp = self.client.post("/api/create_remote_repo", data={"repo_name": "x"}, follow_redirects=False)
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(resp.headers["location"], "/login")
 

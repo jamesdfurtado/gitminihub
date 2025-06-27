@@ -1,5 +1,5 @@
 from tests.test_helpers import AppTestCase
-from app.pages.utils import create_repo_entry
+from app.utils import create_repo_entry
 import json
 
 class UserTests(AppTestCase):
@@ -37,7 +37,7 @@ class UserTests(AppTestCase):
         """ Logged in users can create repos on profile page. """
         self.create_user("alex", password="secret", repos=[])
         self.login_as("alex")
-        resp = self.client.post("/create_repo", data={"repo_name": "testrepo"}, follow_redirects=False)
+        resp = self.client.post("/api/create_remote_repo", data={"repo_name": "testrepo"}, follow_redirects=False)
         self.assertEqual(resp.status_code, 302)
         self.assertIn("/alex/testrepo", resp.headers["location"])
 
@@ -50,12 +50,12 @@ class UserTests(AppTestCase):
         dupe_repo = create_repo_entry("dupe")  # uses the same util used by production code
         self.create_user("sam", repos=[dupe_repo])
         self.login_as("sam")
-        resp = self.client.post("/create_repo", data={"repo_name": "dupe"}, follow_redirects=False)
+        resp = self.client.post("/api/create_remote_repo", data={"repo_name": "dupe"}, follow_redirects=False)
         self.assertEqual(resp.status_code, 302)
         self.assertIn("/?error=Repository%20already%20exists", resp.headers["location"])
 
     def test_create_repo_requires_login_redirects(self):
         """ Not logged in users cannot create repo """
-        resp = self.client.post("/create_repo", data={"repo_name": "shouldfail"}, follow_redirects=False)
+        resp = self.client.post("/api/create_remote_repo", data={"repo_name": ...}, follow_redirects=False)
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(resp.headers["location"], "/login")

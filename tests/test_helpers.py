@@ -2,10 +2,11 @@
 
 import os
 import json
+import shutil
 import unittest
 from fastapi.testclient import TestClient
 from app.main import app
-from app.pages import utils
+from app import utils
 from itsdangerous import URLSafeSerializer
 from passlib.hash import bcrypt
 from datetime import datetime, timezone
@@ -14,9 +15,9 @@ class AppTestCase(unittest.TestCase):
 
     def setUp(self):
         """ Setting up the test environment """
-
         self.client = TestClient(app)
         self.users_path = "tests/users.json"
+        self.repo_root = "repos"
         self._backup = None
 
         if os.path.exists(self.users_path):
@@ -29,6 +30,9 @@ class AppTestCase(unittest.TestCase):
 
         utils.users_path = self.users_path
 
+        if not os.path.exists(self.repo_root):
+            os.makedirs(self.repo_root)
+
         secret = os.environ["GITMINIHUB_SECRET"]
         self.serializer = URLSafeSerializer(secret)
 
@@ -37,6 +41,8 @@ class AppTestCase(unittest.TestCase):
         if self._backup is not None:
             with open(self.users_path, "w") as f:
                 json.dump(self._backup, f)
+        if os.path.exists(self.repo_root):
+            shutil.rmtree(self.repo_root)
 
     def create_user(self, username, password="pw", repos=None):
         """Creates a user in users.json with optional repos."""
@@ -57,11 +63,11 @@ class AppTestCase(unittest.TestCase):
         cookie = self.serializer.dumps(username)
         self.client.cookies.set("session", cookie)
 
-    def create_repo(self, name, created_at=None, path=""):
+    def create_repo(self, name, created_at=None):
         """Returns a repo dictionary for a given name."""
         if not created_at:
             created_at = datetime.now(timezone.utc).isoformat()
-        return {"name": name, "created_at": created_at, "path": path}
+        return {"name": name, "created_at": created_at}
 
     def save_users_file(self, users_dict):
         """Overwrites users.json with the given user dict."""

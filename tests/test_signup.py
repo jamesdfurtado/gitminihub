@@ -1,5 +1,5 @@
 from tests.test_helpers import AppTestCase
-from app.pages.utils import RESERVED_USERNAMES
+from app.utils import RESERVED_USERNAMES
 import json
 
 class SignupTests(AppTestCase):
