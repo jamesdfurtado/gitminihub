@@ -1,7 +1,7 @@
 import os
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse
-from app.pages.utils import (
+from app.utils import (
     get_current_user,
     load_users,
     save_users,
@@ -43,11 +43,12 @@ async def create_remote_repo(request: Request, repo_name: str = Form(...)):
     # Create remote repo scaffolding
     os.makedirs(os.path.join(repo_path, "objects"), exist_ok=True)
     os.makedirs(os.path.join(repo_path, "refs", "heads"), exist_ok=True)
-    os.makedirs(os.path.join(repo_path, "refs", "remotes"), exist_ok=True)
 
-    # Create HEAD pointing to main branch
-    with open(os.path.join(repo_path, "HEAD"), "w") as f:
-        f.write("ref: refs/heads/main")
+#   Not sure if I want to include this right now. it might be useless
+
+#    # Create HEAD pointing to main branch
+#    with open(os.path.join(repo_path, "HEAD"), "w") as f:
+#        f.write("ref: refs/heads/main")
 
     # Create empty main branch ref
     open(os.path.join(repo_path, "refs", "heads", "main"), "w").close()

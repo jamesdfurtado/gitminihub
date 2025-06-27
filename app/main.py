@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
 from app.pages import homepage, user, repo, signup, login, logout
-from app.api import remote
+from app.api import remote_repo
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -28,4 +28,4 @@ app.include_router(repo.router)
 app.include_router(user.router)
 
 # Backend routers
-app.include_router(remote.router)
+app.include_router(remote_repo.router)

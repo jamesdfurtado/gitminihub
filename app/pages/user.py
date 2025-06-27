@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from app.pages.utils import (
+from app.utils import (
     load_users,
     normalize_username,
     get_current_user

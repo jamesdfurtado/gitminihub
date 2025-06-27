@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from app.pages.utils import (
+from app.utils import (
     load_users,
     normalize_username,
     is_invalid_password,
