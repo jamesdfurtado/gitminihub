@@ -10,10 +10,14 @@
         Create Repository
     </button>
 
-    <form id="create-form" action="/api/create_remote_repo" method="post" style="display: none; margin-top: 10px;">
+    <form id="create-form" method="post"
+        onsubmit="this.action='/' + '{{ username }}' + '/' + this.repo_name.value;"
+        style="display: none; margin-top: 10px;">
         <input type="text" name="repo_name" placeholder="Repository name" required>
         <button type="submit">Create</button>
     </form>
+
+
 {% endif %}
 
 {% if error %}

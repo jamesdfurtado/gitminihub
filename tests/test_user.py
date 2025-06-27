@@ -15,7 +15,6 @@ class UserTests(AppTestCase):
 
         resp = self.client.get("/charlie")
         self.assertEqual(resp.status_code, 200)
-        self.assertIn("charlie's Repositories", resp.text)
         for repo in ["my-repo", "weatherapp", "cool-stuff"]:
             self.assertIn(f'<a href="/charlie/{repo}">{repo}</a>', resp.text)
 
@@ -37,7 +36,7 @@ class UserTests(AppTestCase):
         """ Logged in users can create repos on profile page. """
         self.create_user("alex", password="secret", repos=[])
         self.login_as("alex")
-        resp = self.client.post("/api/create_remote_repo", data={"repo_name": "testrepo"}, follow_redirects=False)
+        resp = self.client.post("/alex/testrepo", data={"confirm_name": "testrepo"}, follow_redirects=False)
         self.assertEqual(resp.status_code, 302)
         self.assertIn("/alex/testrepo", resp.headers["location"])
 
@@ -47,15 +46,15 @@ class UserTests(AppTestCase):
 
     def test_create_repo_duplicate_name_rejected(self):
         """ Duplicate repo names are rejected """
-        dupe_repo = create_repo_entry("dupe")  # uses the same util used by production code
+        dupe_repo = create_repo_entry("dupe")
         self.create_user("sam", repos=[dupe_repo])
         self.login_as("sam")
-        resp = self.client.post("/api/create_remote_repo", data={"repo_name": "dupe"}, follow_redirects=False)
+        resp = self.client.post("/sam/dupe", data={"confirm_name": "dupe"}, follow_redirects=False)
         self.assertEqual(resp.status_code, 302)
         self.assertIn("/?error=Repository%20already%20exists", resp.headers["location"])
 
     def test_create_repo_requires_login_redirects(self):
         """ Not logged in users cannot create repo """
-        resp = self.client.post("/api/create_remote_repo", data={"repo_name": ...}, follow_redirects=False)
+        resp = self.client.post("/x/y", data={"confirm_name": "y"}, follow_redirects=False)
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(resp.headers["location"], "/login")

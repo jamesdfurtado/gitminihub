@@ -52,14 +52,16 @@ class HomepageTests(AppTestCase):
         self.assertIn("Please specify a user", resp.text)
 
     def test_homepage_repo_creation_success(self):
+        """ Logged-in user can create repo from homepage """
         self.create_user("john", password="pw", repos=[])
         self.login_as("john")
-        resp = self.client.post("/api/create_remote_repo", data={"repo_name": "newhomepage"}, follow_redirects=False)
+        resp = self.client.post("/john/newhomepage", data={"confirm_name": "newhomepage"}, follow_redirects=False)
         self.assertEqual(resp.status_code, 302)
         self.assertIn("/john/newhomepage", resp.headers["location"])
 
     def test_homepage_create_repo_without_login_redirects(self):
-        resp = self.client.post("/api/create_remote_repo", data={"repo_name": "x"}, follow_redirects=False)
+        """ Creating repo while logged out redirects to login """
+        resp = self.client.post("/x/x", data={"confirm_name": "x"}, follow_redirects=False)
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(resp.headers["location"], "/login")
 
@@ -72,7 +74,6 @@ class HomepageTests(AppTestCase):
         resp = self.client.get("/search?user=ghost", follow_redirects=True)
         self.assertIn("Recent Repositories", resp.text)
         self.assertIn("bob/alpha", resp.text)
-
 
     def test_homepage_recent_repos_reverse_chronological(self):
         """ Recent repos on homepage are ordered newest to oldest """

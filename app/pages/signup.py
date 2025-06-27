@@ -52,7 +52,6 @@ async def signup(
         "password_hash": hash_password(password),
         "repos": []
     }
+
     save_users(users)
-
     return RedirectResponse("/login", status_code=302)
-

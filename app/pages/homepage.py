@@ -4,7 +4,8 @@ from fastapi.templating import Jinja2Templates
 from app.utils import (
     get_current_user,
     load_users,
-    normalize_username
+    normalize_username,
+    get_all_repos
 )
 
 router = APIRouter()
@@ -14,17 +15,7 @@ templates = Jinja2Templates(directory="app/templates")
 async def homepage(request: Request):
     user = get_current_user(request)
     users = load_users()
-
-    all_repos = []
-    for username, data in users.items():
-        for repo in data["repos"]:
-            all_repos.append({
-                "username": username,
-                "name": repo["name"],
-                "created_at": repo["created_at"]
-            })
-
-    all_repos.sort(key=lambda r: r["created_at"], reverse=True)
+    all_repos = get_all_repos(users)
 
     return templates.TemplateResponse(request, "index.html", {
         "user": user,
@@ -36,16 +27,7 @@ async def search(request: Request, user: str = "", repo: str = ""):
     current_user = get_current_user(request)
     user = normalize_username(user)
     users = load_users()
-
-    all_repos = []
-    for username, data in users.items():
-        for r in data["repos"]:
-            all_repos.append({
-                "username": username,
-                "name": r["name"],
-                "created_at": r["created_at"]
-            })
-    all_repos.sort(key=lambda r: r["created_at"], reverse=True)
+    all_repos = get_all_repos(users)
 
     if not user:
         return templates.TemplateResponse(request, "index.html", {

@@ -1,4 +1,4 @@
-import os, json, re
+import os, json, re, shutil
 from passlib.hash import bcrypt
 from itsdangerous import URLSafeSerializer
 from fastapi import Request
@@ -9,6 +9,10 @@ users_path = "app/data/users.json"
 RESERVED_USERNAMES = {
     "login", "logout", "signup", "search", "static", "admin", "user", "api", "create_repo"
 }
+
+# Dynamic repo root (so tests can override it)
+def get_repo_root():
+    return os.getenv("GITMINIHUB_REPO_ROOT", "repos")
 
 # For validating cookies
 SECRET_KEY = os.environ["GITMINIHUB_SECRET"]
@@ -70,20 +74,51 @@ def create_repo_entry(name: str) -> dict:
         "created_at": datetime.now(UTC).isoformat()
     }
 
-# Creates a new repo (just like clicking "Create repo" button on GitHub)
 def add_repo_to_user(users: dict, username: str, repo_name: str) -> str | None:
-    """
-    Adds a new repo to the given user if it doesn't already exist.
-    Returns an error message string if there's a problem, or None if success.
-    """
     normalized = normalize_username(repo_name)
     user_data = users.get(username)
-
     if not user_data:
         return "User not found"
-
     if any(r["name"] == normalized for r in user_data["repos"]):
         return "Repository already exists"
-
     user_data["repos"].append(create_repo_entry(normalized))
     return None
+
+def get_user_repo_entry(users: dict, username: str, repo_name: str) -> dict | None:
+    return next((r for r in users.get(username, {}).get("repos", []) if r["name"] == repo_name), None)
+
+def delete_repo_from_filesystem(username: str, repo_name: str):
+    path = os.path.join(get_repo_root(), username, repo_name)
+    if os.path.exists(path):
+        shutil.rmtree(path)
+
+def remove_repo_from_user(users: dict, username: str, repo_name: str):
+    users[username]["repos"] = [
+        r for r in users.get(username, {}).get("repos", [])
+        if r["name"] != repo_name
+    ]
+
+def is_repo_owner(current_user: str | None, username: str) -> bool:
+    return current_user == username
+
+def get_all_repos(users: dict) -> list[dict]:
+    all_repos = []
+    for username, data in users.items():
+        for repo in data["repos"]:
+            all_repos.append({
+                "username": username,
+                "name": repo["name"],
+                "created_at": repo["created_at"]
+            })
+    return sorted(all_repos, key=lambda r: r["created_at"], reverse=True)
+
+def initialize_repo_structure(username: str, repo_name: str):
+    base_path = os.path.join(get_repo_root(), username, repo_name, ".gitmini")
+    if os.path.exists(base_path):
+        return False
+
+    os.makedirs(os.path.join(base_path, "objects"), exist_ok=True)
+    os.makedirs(os.path.join(base_path, "refs", "heads"), exist_ok=True)
+    open(os.path.join(base_path, "refs", "heads", "main"), "w").close()
+
+    return True

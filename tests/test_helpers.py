@@ -1,9 +1,11 @@
-# Just to clarify, these are helper functions for the test cases
-
 import os
 import json
 import shutil
 import unittest
+
+os.environ["GITMINIHUB_REPO_ROOT"] = "tests/repos"
+os.environ["GITMINIHUB_SECRET"] = "testsecret"
+
 from fastapi.testclient import TestClient
 from app.main import app
 from app import utils
@@ -14,44 +16,43 @@ from datetime import datetime, timezone
 class AppTestCase(unittest.TestCase):
 
     def setUp(self):
-        """ Setting up the test environment """
+        """ Setting up the test environment (fresh every time). """
         self.client = TestClient(app)
         self.users_path = "tests/users.json"
-        self.repo_root = "repos"
-        self._backup = None
-
-        if os.path.exists(self.users_path):
-            with open(self.users_path, "r") as f:
-                self._backup = json.load(f)
-        else:
-            os.makedirs(os.path.dirname(self.users_path), exist_ok=True)
-            with open(self.users_path, "w") as f:
-                json.dump({}, f)
+        self.repo_root = "tests/repos"
 
         utils.users_path = self.users_path
 
-        if not os.path.exists(self.repo_root):
-            os.makedirs(self.repo_root)
+        # Start fresh users.json
+        os.makedirs(os.path.dirname(self.users_path), exist_ok=True)
+        with open(self.users_path, "w") as f:
+            json.dump({}, f)
+
+        # Start fresh repos dir
+        if os.path.exists(self.repo_root):
+            shutil.rmtree(self.repo_root)
+        os.makedirs(self.repo_root)
 
         secret = os.environ["GITMINIHUB_SECRET"]
         self.serializer = URLSafeSerializer(secret)
 
     def tearDown(self):
-        """ Tearing down test environment. """
-        if self._backup is not None:
-            with open(self.users_path, "w") as f:
-                json.dump(self._backup, f)
+        """Clean up after each test run."""
         if os.path.exists(self.repo_root):
             shutil.rmtree(self.repo_root)
+        if os.path.exists(self.users_path):
+            os.remove(self.users_path)
 
     def create_user(self, username, password="pw", repos=None):
         """Creates a user in users.json with optional repos."""
         if repos is None:
             repos = []
-        users = {username: {
-            "password_hash": bcrypt.hash(password),
-            "repos": repos
-        }}
+        users = {
+            username: {
+                "password_hash": bcrypt.hash(password),
+                "repos": repos
+            }
+        }
         self.save_users_file(users)
 
     def login_as(self, username):
@@ -78,3 +79,10 @@ class AppTestCase(unittest.TestCase):
         """Wipes all users from users.json."""
         with open(self.users_path, "w") as f:
             json.dump({}, f)
+
+    def create_repo_structure(self, username, repo_name):
+        """Creates a basic .gitmini structure on disk for testing."""
+        base = os.path.join(self.repo_root, username, repo_name, ".gitmini")
+        os.makedirs(os.path.join(base, "objects"), exist_ok=True)
+        os.makedirs(os.path.join(base, "refs", "heads"), exist_ok=True)
+        open(os.path.join(base, "refs", "heads", "main"), "w").close()

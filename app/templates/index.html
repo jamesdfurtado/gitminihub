@@ -25,7 +25,9 @@
                 <button onclick="document.getElementById('create-form').style.display='inline'; this.style.display='none';">
                     Create Repository
                 </button>
-                <form id="create-form" action="/api/create_remote_repo" method="post" style="display: none; margin: 0;">
+                <form id="create-form" method="post"
+                      onsubmit="this.action='/' + '{{ user }}' + '/' + this.repo_name.value;"
+                      style="display: none; margin: 0;">
                     <input type="text" name="repo_name" placeholder="Repository name" required>
                     <button type="submit">Create</button>
                 </form>
