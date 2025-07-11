@@ -7,7 +7,8 @@ from datetime import datetime, UTC
 # user content "database"
 users_path = "app/data/users.json"
 RESERVED_USERNAMES = {
-    "login", "logout", "signup", "search", "static", "admin", "user", "api", "create_repo"
+    "login", "logout", "signup", "search", "static", "admin", "user", "api", "create_repo",
+    "auth", "cli-login"
 }
 
 # Dynamic repo root (so tests can override it)
