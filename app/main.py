@@ -16,9 +16,6 @@ async def disable_caching(request: Request, call_next):
     response.headers["Pragma"] = "no-cache"
     return response
 
-# Mount static files
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
-
 # Frontend routers
 app.include_router(signup.router)
 app.include_router(login.router)
