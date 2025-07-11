@@ -50,7 +50,8 @@ async def signup(
 
     users[normalized] = {
         "password_hash": hash_password(password),
-        "repos": []
+        "repos": [],
+        "api_keys": []
     }
 
     save_users(users)
