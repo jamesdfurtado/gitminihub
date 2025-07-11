@@ -12,3 +12,7 @@ __pycache__/
 
 # Remote repository storage
 repos/
+
+# Personal docs
+*.md
+!README.md
