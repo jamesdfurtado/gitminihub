@@ -5,7 +5,7 @@ from fastapi import Request
 from datetime import datetime, UTC
 
 # user content "database"
-users_path = "app/data/users.json"
+users_path = os.getenv("GITMINIHUB_USERS_PATH", "app/data/users.json")
 RESERVED_USERNAMES = {
     "login", "logout", "signup", "search", "static", "admin", "user", "api", "create_repo",
     "auth", "cli-login"
@@ -13,7 +13,7 @@ RESERVED_USERNAMES = {
 
 # Dynamic repo root (so tests can override it)
 def get_repo_root():
-    return os.getenv("GITMINIHUB_REPO_ROOT", "repos")
+    return os.getenv("GITMINIHUB_REPO_ROOT", "app/data/repos")
 
 # For validating cookies
 SECRET_KEY = os.environ["GITMINIHUB_SECRET"]

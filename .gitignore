@@ -11,7 +11,7 @@ __pycache__/
 .env
 
 # Remote repository storage
-repos/
+app/data/repos/
 
 # Personal docs
 *.md
