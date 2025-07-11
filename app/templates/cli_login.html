@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}CLI Authentication – GitMiniHub{% endblock %}
+
+{% block content %}
+<h1>GitMini CLI Authentication</h1>
+<p>Complete your CLI authentication by logging in with your GitMiniHub account or creating a new one.</p>
+
+{% if error %}
+    <p>{{ error }}</p>
+{% endif %}
+
+<h3>Login with Existing Account</h3>
+<form method="post" action="/cli-login">
+    <input type="hidden" name="cli_token" value="{{ cli_token }}">
+    <input type="hidden" name="action" value="login">
+    <label for="login-username">Username:</label>
+    <input type="text" id="login-username" name="username" required><br>
+    <label for="login-password">Password:</label>
+    <input type="password" id="login-password" name="password" required><br>
+    <button type="submit">Login</button>
+</form>
+
+<p>OR</p>
+
+<h3>Create New Account</h3>
+<form method="post" action="/cli-login">
+    <input type="hidden" name="cli_token" value="{{ cli_token }}">
+    <input type="hidden" name="action" value="signup">
+    <label for="signup-username">Username:</label>
+    <input type="text" id="signup-username" name="username" required><br>
+    <small>Use only lowercase letters, numbers, or dashes</small><br>
+    <label for="signup-password">Password:</label>
+    <input type="password" id="signup-password" name="password" required><br>
+    <small>Cannot contain spaces</small><br>
+    <button type="submit">Create Account</button>
+</form>
+
+<p>After authentication, you can return to your terminal. The CLI will automatically receive your API key.</p>
+{% endblock %} 
