@@ -5,13 +5,18 @@
 __pycache__/
 
 # JSON "Databases"
-*.json
+app/data/users.json
 
 # environment variables
 .env
 
 # Remote repository storage
 app/data/repos/
+
+# Test data
+/tests/data/
+!/tests/data/
+/tests/data/*
 
 # Personal docs
 *.md

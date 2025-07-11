@@ -3,8 +3,12 @@ import json
 import shutil
 import unittest
 
-os.environ["GITMINIHUB_REPO_ROOT"] = "app/data/tests/repos"
-os.environ["GITMINIHUB_USERS_PATH"] = "app/data/tests/users.json"
+test_data_dir = "tests/data"
+users_json_path = os.path.join(test_data_dir, "users.json")
+repos_root_path = os.path.join(test_data_dir, "repos")
+
+os.environ["GITMINIHUB_REPO_ROOT"] = repos_root_path
+os.environ["GITMINIHUB_USERS_PATH"] = users_json_path
 os.environ["GITMINIHUB_SECRET"] = "testsecret"
 
 from fastapi.testclient import TestClient
@@ -19,13 +23,15 @@ class AppTestCase(unittest.TestCase):
     def setUp(self):
         """ Setting up the test environment (fresh every time). """
         self.client = TestClient(app)
-        self.users_path = "app/data/tests/users.json"
-        self.repo_root = "app/data/tests/repos"
+        self.users_path = users_json_path
+        self.repo_root = repos_root_path
 
         utils.users_path = self.users_path
 
+        # Ensure tests/data/ exists
+        os.makedirs(test_data_dir, exist_ok=True)
+
         # Start fresh users.json
-        os.makedirs(os.path.dirname(self.users_path), exist_ok=True)
         with open(self.users_path, "w") as f:
             json.dump({}, f)
 
