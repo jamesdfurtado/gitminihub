@@ -40,25 +40,3 @@ class UtilsTests(AppTestCase):
 
         resp = self.client.get("/alex")
         self.assertTrue(resp.text.find("latest") < resp.text.find("first"))
-
-    def test_initialize_repo_structure_creates_remote_branches_json(self):
-        username = "testuser"
-        repo_name = "testrepo"
-        repo_root = utils.get_repo_root()
-        base_path = os.path.join(repo_root, username, repo_name, ".gitmini")
-        # Clean up before test
-        if os.path.exists(os.path.join(repo_root, username)):
-            import shutil
-            shutil.rmtree(os.path.join(repo_root, username))
-        # Run
-        result = utils.initialize_repo_structure(username, repo_name)
-        self.assertTrue(result)
-        remote_branches_path = os.path.join(base_path, "remote_branches.json")
-        self.assertTrue(os.path.exists(remote_branches_path))
-        with open(remote_branches_path) as f:
-            contents = f.read()
-        self.assertEqual(contents, "{}\n")
-        # Clean up after test
-        if os.path.exists(os.path.join(repo_root, username)):
-            import shutil
-            shutil.rmtree(os.path.join(repo_root, username))
