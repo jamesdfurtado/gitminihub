@@ -10,7 +10,7 @@ We need to create the endpois for "gitmini remote add" command.
 
 When the user calls "gitmini remote add <repo-name>", it does:
 
-POST /api/remote_add
+POST /api/remote/add
 {
   "user": "james",
   "api_key": "abc123xyz",
@@ -62,7 +62,7 @@ Malformed Payload
 
 When GitMini CLI makes a push, we do:
 
-"POST /api/push", with the following payload:
+"POST /api/remote/push", with the following payload:
 
 {
   "user": "james",
@@ -132,7 +132,7 @@ IGNORE THIS SECTION FOR NOW, WE ARE JUST GOING TO IMPLEMENT PUSH.
 
 When GitMini CLI requests a pull, we do:
 
-POST /api/pull
+POST /api/remote/pull
 
 {
     user,

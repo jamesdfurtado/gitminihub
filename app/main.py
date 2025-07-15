@@ -16,12 +16,12 @@ async def disable_caching(request: Request, call_next):
     response.headers["Pragma"] = "no-cache"
     return response
 
-# Register backend (API) routers first
+# Backend routes
 app.include_router(cli_auth.router)
 app.include_router(remote_repo.router)
 app.include_router(remote_add.router)
 
-# Register frontend (page) routers second
+# Frontend routes
 app.include_router(signup.router)
 app.include_router(login.router)
 app.include_router(logout.router)

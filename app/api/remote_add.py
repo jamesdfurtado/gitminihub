@@ -1,30 +1,21 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 from app.utils import load_users, get_repo_root
 import os
 
 router = APIRouter()
 
-@router.post("/api/remote_add")
-async def remote_add(request: Request):
-    # Parse and validate payload
-    try:
-        data = await request.json()
-    except Exception:
-        return JSONResponse(status_code=400, content={
-            "status": "error",
-            "message": "Invalid request payload"
-        })
+class RemoteAddRequest(BaseModel):
+    user: str
+    api_key: str
+    repo: str
 
-    if not all(k in data for k in ("user", "api_key", "repo")):
-        return JSONResponse(status_code=400, content={
-            "status": "error",
-            "message": "Invalid request payload"
-        })
-
-    username = data["user"]
-    api_key = data["api_key"]
-    repo_name = data["repo"]
+@router.post("/api/remote/add")
+async def remote_add(body: RemoteAddRequest):
+    username = body.user
+    api_key = body.api_key
+    repo_name = body.repo
 
     users = load_users()
     user = users.get(username)
@@ -52,8 +43,8 @@ async def remote_add(request: Request):
             "message": "Repository not found"
         })
 
-    # Gather branch info from refs/heads
-    heads_dir = os.path.join(user_repo_path, "refs", "heads")
+    # Gather branch info from .gitmini/refs/heads
+    heads_dir = os.path.join(user_repo_path, ".gitmini", "refs", "heads")
     branches = {}
     if os.path.isdir(heads_dir):
         for fname in os.listdir(heads_dir):
