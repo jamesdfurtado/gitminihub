@@ -121,5 +121,6 @@ def initialize_repo_structure(username: str, repo_name: str):
     os.makedirs(os.path.join(base_path, "objects"), exist_ok=True)
     os.makedirs(os.path.join(base_path, "refs", "heads"), exist_ok=True)
     open(os.path.join(base_path, "refs", "heads", "main"), "w").close()
-
+    with open(os.path.join(base_path, "remote_branches.json"), "w") as f:
+        f.write("{}\n")
     return True

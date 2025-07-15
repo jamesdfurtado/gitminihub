@@ -8,7 +8,7 @@ The idea is that the user does "gitmini init" --> "gitmini login" --> "gitmini r
 
 When the user calls "gitmini remote add <repo-name>", it does:
 
-POST /api/remote_info
+POST /api/remote_add
 {
   "user": "james",
   "api_key": "abc123xyz",
@@ -17,7 +17,7 @@ POST /api/remote_info
 
 Responses:
 
-Success)
+Success
 {
   "status": "ok",
   "message": "Connected to remote",
