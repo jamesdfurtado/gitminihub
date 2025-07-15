@@ -17,7 +17,3 @@ app/data/repos/
 /tests/data/
 !/tests/data/
 /tests/data/*
-
-# Personal docs
-*.md
-!README.md

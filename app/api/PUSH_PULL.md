@@ -1,0 +1,101 @@
+# Push / pull payloads.
+
+
+# Before anything!!!!
+
+In order for GitMini to login to a CLI session, there already needs to be a .gitmini folder.
+The idea is that the user does "gitmini init" --> "gitmini login" --> "gitmini remote add <repo-name>".
+* This command basically just means that we are connecting our local repository to the remote repository.
+* Then from there, the user will push their stuff up to it.
+* For now, we will not do any pulls, just pushes. This means users cannot modify their remote repo from GitMiniHub.
+
+
+---
+
+When GitMini CLI makes a push, we do:
+
+"POST /api/push", with the following payload:
+
+{
+  "user": "james",
+  "api_key": "abc123xyz",
+  "repo": "my-repo",
+  "branch": "main",
+
+  "last_known_remote_commit": "def456...",
+  "new_commit": "abc123..."
+}
+
+
+and an attached "new_objects.tar.gz" compressed file, which contains
+ONLY the new objects needed.
+
+Responses:
+
+Successful push:
+{
+  "status": "ok",
+  "message": "Push successful",
+  "updated_head": "abc123..."  // matches new_commit
+}
+Updated head field should be then used to update the associated commit in the local remote_branch.json
+
+
+rejected- non-fast forward push.
+This happens when last_known_remote_commit does not match the current commit at refs/heads/<branch>
+on the server.
+{
+  "status": "error",
+  "message": "Non-fast-forward push rejected. Remote branch has diverged.",
+  "remote_head": "ghi789..."  // actual current head
+}
+
+
+Auth failure
+{
+  "status": "error",
+  "message": "Authentication failed"
+}
+
+Repo not found or unauthorized access
+{
+  "status": "error",
+  "message": "Repository not found or access denied"
+}
+
+Malformed Payload
+{
+  "status": "error",
+  "message": "Invalid push payload"
+}
+
+Corrupt or Missing Archive file (if new_objects.tar.gz is missing/unreadable)
+{
+  "status": "error",
+  "message": "Object archive missing or corrupt"
+}
+
+
+---
+IGNORE THIS SECTION FOR NOW, WE ARE JUST GOING TO IMPLEMENT PUSH.
+
+When GitMini CLI requests a pull, we do:
+
+POST /api/pull
+
+{
+    user,
+    api_key,
+    repo,
+    branch
+    
+    last_local_commit   # this hash is fetched directly from refs/heads/<current_local_branch>
+}
+
+Upon success, you get response:
+
+{
+    "new_commit" : <hash>
+}
+as well as an attached "missing_objects.tar.gz", which contains only new needed files. 
+(the new commit, its associated tree, and new blobs)
