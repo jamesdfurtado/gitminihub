@@ -2,6 +2,8 @@
 
 In order for GitMini to login to a CLI session, there already needs to be a .gitmini folder.
 The idea is that the user does "gitmini init" --> "gitmini login" --> "gitmini remote add <repo-name>".
+
+We need to create the endpois for "gitmini remote add" command.
 * This command basically just means that we are connecting our local repository to the remote repository.
 * Then from there, the user will push their stuff up to it.
 * For now, we will not do any pulls, just pushes. This means users cannot modify their remote repo from GitMiniHub.
