@@ -1,7 +1,4 @@
-# Push / pull payloads.
-
-
-# Before anything!!!!
+# Before anything! Remote adds
 
 In order for GitMini to login to a CLI session, there already needs to be a .gitmini folder.
 The idea is that the user does "gitmini init" --> "gitmini login" --> "gitmini remote add <repo-name>".
@@ -9,8 +6,57 @@ The idea is that the user does "gitmini init" --> "gitmini login" --> "gitmini r
 * Then from there, the user will push their stuff up to it.
 * For now, we will not do any pulls, just pushes. This means users cannot modify their remote repo from GitMiniHub.
 
+When the user calls "gitmini remote add <repo-name>", it does:
+
+POST /api/remote_info
+{
+  "user": "james",
+  "api_key": "abc123xyz",
+  "repo": "my-repo"
+}
+
+Responses:
+
+Success)
+{
+  "status": "ok",
+  "message": "Connected to remote",
+  "branches": {
+    "main": "abc123...",
+    "dev": "def456..."      // This part is crucial for filling in our remote_branches.json properly.
+  }
+}
+
+Auth Failure
+{
+  "status": "error",
+  "message": "Authentication failed"
+}
+
+Repo not found
+{
+  "status": "error",
+  "message": "Repository not found"
+}
+
+Repo exists, but is someone elses. (This should NEVER be the case, 
+because when we are connecting to repos, you can only connect to your own)
+{
+  "status": "error",
+  "message": "Access denied to repository"
+}
+
+Malformed Payload
+{
+  "status": "error",
+  "message": "Invalid request payload"
+}
+
+
 
 ---
+
+# Push
 
 When GitMini CLI makes a push, we do:
 
@@ -77,6 +123,9 @@ Corrupt or Missing Archive file (if new_objects.tar.gz is missing/unreadable)
 
 
 ---
+
+# Pull
+
 IGNORE THIS SECTION FOR NOW, WE ARE JUST GOING TO IMPLEMENT PUSH.
 
 When GitMini CLI requests a pull, we do:
