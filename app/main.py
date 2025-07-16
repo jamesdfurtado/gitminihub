@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
 from app.pages import homepage, user, repo, signup, login, logout, cli_login
-from app.api import remote_repo, cli_auth, remote_add
+from app.api import remote_repo, cli_auth, remote_add, push
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -20,6 +20,7 @@ async def disable_caching(request: Request, call_next):
 app.include_router(cli_auth.router)
 app.include_router(remote_repo.router)
 app.include_router(remote_add.router)
+app.include_router(push.router)
 
 # Frontend routes
 app.include_router(signup.router)

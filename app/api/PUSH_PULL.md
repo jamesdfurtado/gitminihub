@@ -58,6 +58,8 @@ Malformed Payload
 
 ---
 
+General thing: Make sure the body request format is pre-determined
+
 # Push
 
 When GitMini CLI makes a push, we do:
@@ -98,6 +100,12 @@ on the server.
   "remote_head": "ghi789..."  // actual current head
 }
 
+Could not find specified branch
+{
+  "status": "error",
+  "message": "Remote branch not found.",
+  "remote_head": "ghi789..."  // actual current head
+}
 
 Auth failure
 {
