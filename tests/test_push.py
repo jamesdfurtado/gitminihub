@@ -63,6 +63,7 @@ class PushTests(AppTestCase):
         self.add_api_key("eve", "k2")
         os.makedirs(os.path.join(self.repo_root, "eve", "sharedrepo", ".gitmini"))
         self.make_branch("eve", "sharedrepo", "main")
+        # Dave tries to access Eve's repo
         resp = self.client.post("/api/remote/push", json={"user": "dave", "api_key": api_key, "repo": "sharedrepo", "branch": "main"})
         self.assertEqual(resp.status_code, 403)
         self.assertEqual(resp.json()["status"], "error")
