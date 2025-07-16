@@ -54,11 +54,15 @@ class AppTestCase(unittest.TestCase):
         """Creates a user in users.json with optional repos."""
         if repos is None:
             repos = []
-        users = {
-            username: {
-                "password_hash": bcrypt.hash(password),
-                "repos": repos
-            }
+        # Load existing users
+        if os.path.exists(self.users_path):
+            with open(self.users_path, "r") as f:
+                users = json.load(f)
+        else:
+            users = {}
+        users[username] = {
+            "password_hash": bcrypt.hash(password),
+            "repos": repos
         }
         self.save_users_file(users)
 
