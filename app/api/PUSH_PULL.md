@@ -64,33 +64,28 @@ General thing: Make sure the body request format is pre-determined
 
 When GitMini CLI makes a push, we do:
 
-"POST /api/remote/push", with the following payload:
+"POST /api/remote/push", with the following payload as multipart/form-data:
 
-{
-  "user": "james",
-  "api_key": "abc123xyz",
-  "repo": "my-repo",
-  "branch": "main",
+Form fields:
+- user: james
+- api_key: abc123xyz
+- repo: my-repo
+- branch: main
+- last_known_remote_commit: def456...
+- new_commit: abc123...
 
-  "last_known_remote_commit": "def456...",
-  "new_commit": "abc123..."
-}
-
-
-and an attached "new_objects.tar.gz" compressed file, which contains
-ONLY the new objects needed.
+File field:
+- objects: new_objects.tar.gz (compressed file containing ONLY the new objects needed)
 
 Responses:
 
 Successful push:
 {
-  "status": "error",
-  "message": "Non-fast-forward push rejected. Remote branch has diverged.",
-  "branch": "<current-remote-branch>"
+  "status": "ok",
+  "message": "Push successful.",
+  "branch": "<current-remote-branch>",
   "most_recent_remote_branch_commit": "ghi789..."  // the current remote branch's most recent commit (should be the commit we just pushed up)
 }
-Updated head field should be then used to update the associated commit in the local remote_branch.json
-
 
 rejected- non-fast forward push.
 This happens when last_known_remote_commit does not match the current commit at refs/heads/<branch>
@@ -98,14 +93,14 @@ on the server.
 {
   "status": "error",
   "message": "Non-fast-forward push rejected. Remote branch has diverged.",
-  "branch": "<current-remote-branch>"
+  "branch": "<current-remote-branch>",
   "most_recent_remote_branch_commit": "ghi789..."  // actual current remote branch's most recent commit
 }
 
 Could not find specified branch
 {
   "status": "error",
-  "message": "Remote branch not found.",
+  "message": "Remote branch not found."
 }
 
 Auth failure
