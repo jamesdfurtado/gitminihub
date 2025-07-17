@@ -84,9 +84,10 @@ Responses:
 
 Successful push:
 {
-  "status": "ok",
-  "message": "Push successful",
-  "updated_head": "abc123..."  // matches new_commit
+  "status": "error",
+  "message": "Non-fast-forward push rejected. Remote branch has diverged.",
+  "branch": "<current-remote-branch>"
+  "most_recent_remote_branch_commit": "ghi789..."  // the current remote branch's most recent commit (should be the commit we just pushed up)
 }
 Updated head field should be then used to update the associated commit in the local remote_branch.json
 
@@ -97,14 +98,14 @@ on the server.
 {
   "status": "error",
   "message": "Non-fast-forward push rejected. Remote branch has diverged.",
-  "remote_head": "ghi789..."  // actual current head
+  "branch": "<current-remote-branch>"
+  "most_recent_remote_branch_commit": "ghi789..."  // actual current remote branch's most recent commit
 }
 
 Could not find specified branch
 {
   "status": "error",
   "message": "Remote branch not found.",
-  "remote_head": "ghi789..."  // actual current head
 }
 
 Auth failure
